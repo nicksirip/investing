@@ -1,0 +1,3 @@
+plot data = (Ask - Bid)/Close * 100;
+
+data.AssignValueColor(if data < .25 then Color.GREEN else if data > .50 then Color.RED else Color.CURRENT);
