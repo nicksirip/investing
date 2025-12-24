@@ -1,0 +1,3 @@
+plot data = Highest((VolumeAvg().Vol / VolumeAvg()."VolAvg"),5);
+
+data.AssignValueColor(if data >= 1.75 then Color.GREEN else if data >= 1.5 then Color.ORANGE else Color.CURRENT);
