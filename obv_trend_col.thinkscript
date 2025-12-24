@@ -1,0 +1,5 @@
+plot data = (OnBalanceVolume() from 1 bars ago is greater than OnBalanceVolume() from 2 bars ago)
++ (OnBalanceVolume() from 2 bars ago is greater than OnBalanceVolume() from 3 bars ago)
++ (OnBalanceVolume() from 3 bars ago is greater than OnBalanceVolume() from 4 bars ago);
+
+data.AssignValueColor(if data >= 2 then Color.GREEN else if data == 0 then Color.RED else Color.CURRENT);
