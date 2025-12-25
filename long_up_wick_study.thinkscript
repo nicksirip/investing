@@ -1,5 +1,0 @@
-plot Scan = Min(Open,Close) - Low > BodyHeight()*1.5
-and Min(Open,Close) - Low > (High - Max(Open,Close))*1.5
-and (VolumeAvg().Vol / VolumeAvg()."VolAvg") > 1.1;
-
-Scan.setpaintingStrategy(paintingStrategy.BOOLEAN_ARROW_UP);
