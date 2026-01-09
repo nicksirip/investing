@@ -1,0 +1,6 @@
+def ray_direction = (RayBearPower()."BearPower" is greater than RayBearPower()."BearPower" from 1 bars ago) or (RayBearPower()."BearPower" is greater than RayBearPower()."BearPower" from 2 bars ago);
+
+Plot data = RayBearPower()."BearPower";
+
+data.AssignValueColor(if ray_direction == 1 then Color.GREEN
+else Color.RED);
