@@ -1,0 +1,16 @@
+input bearAverageLength = 3;
+input bearAverageType = AverageType.SIMPLE;
+input bullAverageLength = 3;
+input bullAverageType = AverageType.SIMPLE;
+input bullThreshold=0.0;
+input bearThreshold=0.0;
+
+plot RayBearMA = MovingAverage(bearAverageType, Ray().BearPower, bearAverageLength);
+plot RayBullMA = MovingAverage(bullAverageType, Ray().BullPower, bullAverageLength);
+plot RayLookback = Sum(Ray().BearPower > bullThreshold, bullAverageLength)-Sum(Ray().BearPower < bearThreshold, bearAverageLength);
+
+RayLookback.SetPaintingStrategy(PaintingStrategy.POINTS);
+RayLookback.DefineColor("Up", Color.YELLOW);
+RayLookback.DefineColor("Down", Color.MAGENTA);
+
+RayLookback.AssignValueColor(if RayLookback > 0 then RayLookback.color("Up") else RayLookback.color("Down"));
