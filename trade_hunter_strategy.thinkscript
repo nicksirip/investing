@@ -1,0 +1,113 @@
+#hint: <b>Hints</b> \n This study incorporates the ray study.  It uses a combination of the following to signal potential buy and sell signals.\n <li>ray price crossing thresholds, moving average crossovers</li>\n<li>moving average directional changes</li>
+#hint rayBearBuyLowerThreshold: <b>Nothing</b> depends on this parameter. 
+
+# these are the upper and lower thresholds for the ray charts to trigger signals for
+input rayBearBuyLowerThreshold = -0.1;
+input rayBearBuyUpperThreshold = 1000.0;
+input rayBearSellLowerThreshold = -1000.0;
+input rayBearSellUpperThreshold = 0.1;
+
+#input ray_bear_buy_cross = -0.1;
+#input ray_bear_sell_cross = 0.1;
+
+# I also want to check price relative to a moving average
+input stockPriceType = close;
+
+input bullPriceAboveMaEnforcement = yes;
+input bullPriceAboveMaType = AverageType.SIMPLE;
+input bullPriceAboveMaPriceType = low;
+input bullPriceAboveMaLength = 50;
+
+input bearPriceBelowMaEnforcement = yes;
+input bearPriceBelowMaType = AverageType.HULL;
+input bearPriceBelowMaPriceType = high;
+input bearPriceBelowMaPriceLength = 50;
+
+input maDirectionBullEnforcement = no;
+input maDirectionBearEnforcement = no;
+input maDirectionType = AverageType.HULL;
+input maDirectionPriceType = ohlc4;
+input maDirectionLength = 50;
+
+#input rayLookbackLength = 5;
+# ma price direction
+Plot maDirectionValue = MovingAverage(maDirectionType, maDirectionPriceType, maDirectionLength);
+def maDirectionUp = (maDirectionValue >= maDirectionValue[1]) or !maDirectionBullEnforcement;
+def maDirectionDown = (maDirectionValue <= maDirectionValue[1]) or !maDirectionBearEnforcement;
+def maDirectionBullEvent = (maDirectionValue >= maDirectionValue[1] and maDirectionValue[1] <= maDirectionValue[2]);
+def maDirectionBearEvent = (maDirectionValue <= maDirectionValue[1] and maDirectionValue[1] >= maDirectionValue[2]);
+
+# price above ma
+Plot bullMaValue = MovingAverage(bullPriceAboveMaType, bullPriceAboveMaPriceType, bullPriceAboveMaLength);
+def bullPriceMaCrossEvent = stockPriceType crosses above bullMaValue;
+def bullPriceAboveSearch = (stockPriceType >= bullMaValue) or !bullPriceAboveMaEnforcement;
+
+# price below ma
+Plot bearMaValue = MovingAverage(bearPriceBelowMaType, bearPriceBelowMaPriceType, bearPriceBelowMaPriceLength);
+def bearPriceMaCrossEvent = stockPriceType crosses below bearMaValue;
+def bearPriceBelowSearch = (stockPriceType <= bearMaValue) or !bearPriceBelowMaEnforcement;
+
+# ray bear signals and transitions
+def rayBearValue = Ray().bearPower;
+#def ray_signal_between_search = Between(ray_bear_value, ray_bear_lower_threshold, ray_bear_upper_threshold);
+def rayBearBuyCrossEvent = rayBearValue crosses above rayBearBuyLowerThreshold;
+def rayBearBuyBetweenSearch = Between(rayBearValue, rayBearBuyLowerThreshold, rayBearBuyUpperThreshold);
+def rayBearSellCrossSearch = rayBearValue crosses below rayBearSellUpperThreshold;
+def rayBearSellBetweenEvent = Between(rayBearValue, rayBearSellLowerThreshold, rayBearSellUpperThreshold);
+def rayBearPositive = (rayBearValue >= rayBearBuyLowerThreshold);
+def rayBearNegative = (rayBearValue <= rayBearSellUpperThreshold);
+#def rayAboveLookback = Sum((rayBearValue > rayBearBuyLowerThreshold), rayLookbackLength);
+#def rayBelowLookback = Sum((rayBearValue < rayBearSellUpperThreshold), rayLookbackLength);
+
+plot rayBearCrossBuyScan = bullPriceAboveSearch * maDirectionUp * rayBearBuyCrossEvent;
+plot rayBearCrossSellScan = bearPriceBelowSearch * maDirectionDown * rayBearSellCrossSearch;
+plot hmaTransitionBuyScan = bullPriceAboveSearch * maDirectionBullEvent * rayBearBuyBetweenSearch;
+plot hmaTransitionSellScan = bearPriceBelowSearch * maDirectionBearEvent * rayBearSellBetweenEvent;
+plot maCrossBuyScan = maDirectionUp * bullPriceMaCrossEvent * rayBearPositive;
+plot maCrossSellScan = maDirectionDown * bearPriceMaCrossEvent * rayBearNegative;
+#plot rayLookbackUp = rayAboveLookback >= rayBelowLookback;
+#plot rayLookbackDown = rayAboveLookback <= rayBelowLookback;
+
+#maDirectionValue.SetDefaultColor(Color.PLUM);
+rayBearCrossBuyScan.SetDefaultColor(GetColor(1));
+rayBearCrossSellScan.SetDefaultColor(GetColor(0));
+hmaTransitionBuyScan.SetDefaultColor(GetColor(3));
+hmaTransitionSellScan.SetDefaultColor(GetColor(4));
+maCrossBuyScan.SetDefaultColor(GetColor(5));
+maCrossSellScan.SetDefaultColor(GetColor(6));
+
+bullMaValue.DefineColor("Up", Color.LIGHT_GREEN);
+bullMaValue.DefineColor("Down", Color.LIGHT_RED);
+bearMaValue.DefineColor("Up", Color.VIOLET);
+bearMaValue.DefineColor("Down", Color.ORANGE);
+maDirectionValue.DefineColor("Up", Color.CYAN);
+maDirectionValue.DefineColor("Down", Color.MAGENTA);
+
+bullMaValue.AssignValueColor(if bullMaValue >= bullMaValue[1] == 1 then bullMaValue.color("Up") else bullMaValue.color("Down"));
+bearMaValue.AssignValueColor(if bearMaValue >= bearMaValue[1] == 1 then bearMaValue.color("Up") else bearMaValue.color("Down"));
+maDirectionValue.AssignValueColor(if (maDirectionValue >= maDirectionValue[1]) then maDirectionValue.color("Up") else maDirectionValue.color("Down"));
+#rayLookbackUp.SetDefaultColor(GetColor(7));
+#rayLookbackDown.SetDefaultColor(GetColor(6));
+
+maDirectionValue.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+bullMaValue.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+bearMaValue.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+rayBearCrossBuyScan.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+rayBearCrossSellScan.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+hmaTransitionBuyScan.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+hmaTransitionSellScan.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+maCrossBuyScan.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+maCrossSellScan.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+#rayLookbackUp.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_UP);
+#rayLookbackDown.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_DOWN);
+
+maDirectionValue.Hide();
+bullMaValue.Hide();
+bearMaValue.Hide();
+maDirectionValue.HideBubble();
+bullMaValue.HideBubble();
+bearMaValue.HideBubble();
+#rayLookbackUp.Hide();
+#rayLookbackDown.Hide();
+
+#RayBearCrossBuyScan.SetLineWeight(5);
