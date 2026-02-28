@@ -1,0 +1,28 @@
+declare lower;
+
+input rangeLength = 20;
+input minRangePoints = 20.0;
+
+input rsiLength = 14;
+input rsiOverbought = 70.0;
+
+input rayBearThreshold = -1.0;
+
+def rangePts = Highest(high, rangeLength) - Lowest(low, rangeLength);
+def rsiVal = RSI(length = rsiLength);
+def rayBear = RayBearPower();
+
+def signal =
+    rangePts > minRangePoints and
+    rsiVal > rsiOverbought and
+    rayBear > rayBearThreshold;
+
+plot Binary = if signal then 1 else 0;
+
+# Dots: green when 1, red when 0
+Binary.SetPaintingStrategy(PaintingStrategy.POINTS);
+Binary.SetLineWeight(3);
+Binary.AssignValueColor(if signal then Color.GREEN else Color.RED);
+
+Binary.HideBubble();
+Binary.HideTitle();
