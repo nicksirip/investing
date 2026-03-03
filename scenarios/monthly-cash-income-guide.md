@@ -73,7 +73,7 @@ Monthly income needs range from modest supplemental cash to full living-expense 
 | **Preferred Stocks** | 5–7% / year | Qualified or ordinary depending on issuer | Quarterly (stagger for monthly) |
 | **High-Yield Corporate Bonds** | 6–9% / year | Ordinary income | Monthly (fund) |
 | **Master Limited Partnerships (MLPs)** | 6–10% / year | Return of capital (deferred tax); complex K-1 | Quarterly |
-| **Covered Call / Buy-Write ETFs** | 8–15% / year | Ordinary income (option premium) | Monthly |
+| **Covered Call / Buy-Write ETFs** | 8–15% / year | Ordinary income OR 60/40 capital gains (varies by ETF type — see ETF Toolkit for detail) | Monthly |
 | **Closed-End Funds (CEFs)** | 7–12% / year | Varies by fund strategy | Monthly |
 
 ### Lower Priority — Capital Growth with Some Income
@@ -90,10 +90,23 @@ Monthly income needs range from modest supplemental cash to full living-expense 
 
 ### Core Monthly Income ETFs
 
+#### NEOS Tax-Efficient Covered Call ETFs (Section 1256 — 60/40 Capital Gains Treatment)
+
+These ETFs write index options (SPX, NDX, RUT, etc.) rather than options on individual stocks or ETF shares. Index options qualify as **Section 1256 contracts**, meaning gains and losses are treated as 60% long-term / 40% short-term capital gains regardless of holding period — a significant tax advantage over covered call ETFs that generate ordinary income. They are more suitable for **taxable accounts**, whereas conventional covered call ETFs are better placed in tax-advantaged accounts.
+
 | ETF | Strategy | Ticker | Approx. Yield | Pay Frequency |
 |-----|----------|--------|---------------|---------------|
-| JPMorgan Equity Premium Income | Covered calls on S&P 500 | JEPI | ~7–9% | Monthly |
-| JPMorgan Nasdaq Equity Premium Income | Covered calls on Nasdaq-100 | JEPQ | ~9–11% | Monthly |
+| NEOS S&P 500 High Income ETF | Covered calls on S&P 500 via SPX index options | SPYI | ~10–12% | Monthly |
+| NEOS Nasdaq-100 High Income ETF | Covered calls on Nasdaq-100 via NDX index options | QQQI | ~13–15% | Monthly |
+| NEOS Russell 2000 High Income ETF | Covered calls on Russell 2000 via RUT index options | IWMI | ~12–15% | Monthly |
+| NEOS International High Income ETF | Covered calls on international index via index options | IAUI | ~10–12% | Monthly |
+
+#### Conventional Covered Call & Income ETFs (Ordinary Income Treatment)
+
+| ETF | Strategy | Ticker | Approx. Yield | Pay Frequency |
+|-----|----------|--------|---------------|---------------|
+| JPMorgan Equity Premium Income | Covered calls on S&P 500 via ELNs | JEPI | ~7–9% | Monthly |
+| JPMorgan Nasdaq Equity Premium Income | Covered calls on Nasdaq-100 via ELNs | JEPQ | ~9–11% | Monthly |
 | Global X S&P 500 Covered Call | Buy-write on S&P 500 | XYLD | ~12–14% | Monthly |
 | Global X Nasdaq 100 Covered Call | Buy-write on Nasdaq-100 | QYLD | ~11–13% | Monthly |
 | Schwab U.S. Dividend Equity ETF | Dividend growth stocks | SCHD | ~3–4% | Quarterly |
@@ -108,16 +121,26 @@ Monthly income needs range from modest supplemental cash to full living-expense 
 | Invesco Senior Loan ETF | Floating-rate senior loans | BKLN | ~8–9% | Monthly |
 | Virtus InfraCap U.S. Preferred Stock ETF | Preferred shares, leveraged | PFFA | ~9–10% | Monthly |
 
-### Tax-Advantaged Account ETF Choices (IRA / 401k)
+#### MLP & Energy Infrastructure
 
-| ETF | Rationale | Ticker |
-|-----|-----------|--------|
-| JEPI / JEPQ | Tax-sheltered option premium; high income without current-year tax drag | JEPI, JEPQ |
-| HYG / BKLN | Ordinary income shielded from annual tax | HYG, BKLN |
-| VNQ | REIT ordinary income shielded | VNQ |
-| Alerian MLP ETF | MLP income without K-1; UBTI risk neutralized in IRA structure | AMLP |
+| ETF | Strategy | Ticker | Approx. Yield | Pay Frequency |
+|-----|----------|--------|---------------|---------------|
+| UBS ETRACS Alerian MLP Infrastructure Index ETN Series B | MLP infrastructure exposure via ETN structure; no K-1 | MLPI | ~7–9% | Quarterly |
+| Alerian MLP ETF | MLP basket ETF; issues K-1 | AMLP | ~7–8% | Quarterly |
 
-> **Note:** Municipal bonds lose their tax advantage inside tax-advantaged accounts — use taxable accounts for munis and hold high-yield, REITs, and covered call ETFs inside IRAs.
+### Account Placement Summary
+
+| ETF | Best Account | Reason |
+|-----|-------------|--------|
+| SPYI / QQQI / IWMI / IAUI | **Taxable** | Section 1256 60/40 treatment already favorable; no need to shelter |
+| JEPI / JEPQ / XYLD / QYLD | **Tax-advantaged (IRA / Roth)** | Ordinary income treatment — shelter to avoid annual tax drag |
+| HYG / BKLN | **Tax-advantaged (IRA / Roth)** | Ordinary income shielded from annual tax |
+| VNQ / RQI | **Tax-advantaged (IRA / Roth)** | REIT ordinary income shielded |
+| MUB / individual munis | **Taxable** | Tax exemption only meaningful in taxable accounts |
+| MLPI | **Taxable** | ETN structure avoids K-1 and UBTI; income deferred until sale |
+| AMLP | **Taxable (not IRA)** | UBTI issues in IRA; return-of-capital treatment defers tax naturally |
+
+> **Note:** Municipal bonds lose their tax advantage inside tax-advantaged accounts — use taxable accounts for munis. The NEOS ETFs (SPYI, QQQI, IWMI, IAUI) are the rare covered call ETFs that belong in taxable accounts due to Section 1256 60/40 treatment.
 
 ---
 
@@ -175,10 +198,11 @@ Monthly income needs range from modest supplemental cash to full living-expense 
 |------------|-------------|-----|
 | Municipal bonds / muni ETFs | **Taxable** | Tax exemption only meaningful in taxable accounts |
 | Dividend growth stocks (qualified) | **Taxable** | Qualified rate (0/15/20%) already favorable; tax deferral less critical |
-| Covered call ETFs (JEPI, XYLD) | **Tax-advantaged (IRA)** | Premium income taxed as ordinary income — shield it |
+| NEOS covered call ETFs (SPYI, QQQI, IWMI, IAUI) | **Taxable** | Section 1256 index options → 60% LTCG / 40% STCG regardless of holding period; more tax-efficient than IRA in many brackets |
+| Conventional covered call ETFs (JEPI, XYLD) | **Tax-advantaged (IRA)** | Ordinary income treatment — shield it |
 | REITs / REIT ETFs | **Tax-advantaged (IRA)** | Ordinary income treatment makes sheltering valuable |
 | High-yield bonds | **Tax-advantaged (IRA)** | Ordinary income; no advantage in taxable |
-| MLPs | **Taxable (not IRA)** | UBTI issues in IRA; return-of-capital treatment defers tax naturally |
+| MLPs / MLPI ETN | **Taxable (not IRA)** | UBTI issues in IRA for K-1 MLPs; return-of-capital treatment and ETN deferral naturally tax-efficient |
 | US Treasuries | **Taxable** | State-tax exempt; federal tax is unavoidable regardless |
 | I-Bonds | **Taxable** | Tax deferral built in; state-exempt |
 
@@ -187,10 +211,11 @@ Monthly income needs range from modest supplemental cash to full living-expense 
 1. **Maximize qualified dividends** — Hold dividend stocks ≥ 61 days around ex-dividend date to qualify for preferential rate
 2. **Municipal bonds in taxable accounts** — For investors in the 22%+ bracket, muni tax-equivalent yields often exceed corporate bond after-tax yields
 3. **Tax-loss harvesting** — Harvest losses in taxable account bond positions during rate spikes to offset income; replace with similar (not identical) ETF
-4. **Roth IRA for highest-yielding income** — Place covered call ETFs and REITs in Roth IRA; all future income and growth exits tax-free
-5. **Avoid short-term gains from covered calls** — Covered calls on long equity positions held < 1 year can eliminate long-term capital gains treatment on the underlying; consult a tax advisor before writing calls on positions approaching 1-year hold
-6. **MLP return of capital** — MLP distributions largely classified as return of capital, reducing cost basis rather than creating current taxable income (tax deferred until position is sold)
-7. **Laddering bonds vs. bond funds** — Individual bond ladders generate predictable cash flows and allow holding to maturity (avoiding mark-to-market losses); bond funds distribute interest but show NAV fluctuations
+4. **Roth IRA for highest-yielding income** — Place conventional covered call ETFs (JEPI, XYLD) and REITs in Roth IRA; all future income and growth exits tax-free
+5. **Prefer Section 1256 covered call ETFs in taxable accounts** — NEOS ETFs (SPYI, QQQI, IWMI, IAUI) use index options classified as Section 1256 contracts; gains are automatically split 60% long-term / 40% short-term regardless of how long you hold the ETF. Example at a 35% ordinary income / 20% LTCG rate: JEPI in taxable pays 35% on all income; SPYI pays (0.6 × 20%) + (0.4 × 35%) = 12% + 14% = **26% effective rate** — roughly a quarter reduction in tax drag
+6. **Avoid short-term gains from covered calls** — Covered calls on long equity positions held < 1 year can eliminate long-term capital gains treatment on the underlying; consult a tax advisor before writing calls on positions approaching 1-year hold
+7. **MLP return of capital** — MLP distributions largely classified as return of capital, reducing cost basis rather than creating current taxable income (tax deferred until position is sold); MLPI (ETN structure) achieves similar deferral without K-1 complexity
+8. **Laddering bonds vs. bond funds** — Individual bond ladders generate predictable cash flows and allow holding to maturity (avoiding mark-to-market losses); bond funds distribute interest but show NAV fluctuations
 
 ### Roth Conversion Window
 
@@ -210,7 +235,7 @@ Monthly income needs range from modest supplemental cash to full living-expense 
 | Open taxable brokerage + Roth IRA | Two-bucket approach for asset location |
 | Allocate 40–50% to SCHD or VIG in taxable | Qualified dividend growth foundation; tax-efficient |
 | Allocate 20–30% to MUB or individual munis in taxable | Tax-exempt monthly income (if in 22%+ bracket) |
-| Allocate 20–30% to JEPI/JEPQ in Roth IRA | High monthly income shielded from ordinary income tax |
+| Allocate 20–30% to JEPI/JEPQ in Roth IRA or SPYI/QQQI in taxable | High monthly income: shelter JEPI/JEPQ from ordinary income tax in IRA, or use SPYI/QQQI in taxable for 60/40 capital gains treatment |
 | Add O (Realty Income) 5–10% in IRA | Monthly dividend; ordinary income shielded |
 
 ### Scenario B: Scaling to Full Expense Coverage (Levels 3–4)
