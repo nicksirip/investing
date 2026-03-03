@@ -1,111 +1,276 @@
-# Scenario Guide: Direct US/Israel–Iran Conflict (6–12 Month Horizon)
+# US/Israel–Iran Conflict Positioning Guide
 
-> **Disclaimer:** This document is for general educational and analytical purposes only. It does not constitute personalized financial advice. No specific securities, funds, or tickers are mentioned or recommended.
-
----
-
-## 1. Scenario Framing
-
-This guide addresses how to think about asset-class behavior in the event of a direct military conflict involving the United States and/or Israel against Iran, spanning a horizon of roughly 6–12 months. The scenario is distinct from proxy skirmishes or targeted strikes; it assumes sustained, large-scale hostilities.
-
-Key framing questions before drawing any conclusions:
-
-- **Duration and intensity:** A short, decisive campaign has different market implications than a prolonged war of attrition.
-- **Geographic scope:** Does the conflict remain contained to Iranian territory and immediate neighbors, or does it escalate regionally (e.g., Hezbollah, Houthi, Iraqi militia involvement)?
-- **Strait of Hormuz disruption:** Roughly 20–25% of globally traded oil passes through the Strait. Partial or full closure is the single most consequential supply shock variable.
-- **Inflation vs. growth shock framing:** Is the dominant market impact an energy-driven inflation spike, a risk-off growth scare, or both simultaneously? Each drives different relative performance across asset classes.
-- **Central bank reaction function:** Do central banks look through an oil price spike as transitory, or do they tighten into a slowing economy? The answer shapes rate-sensitive assets significantly.
-- **US election and political cycle:** Fiscal and diplomatic response options may be constrained or amplified depending on the domestic political environment.
-- **Global coalition dynamics:** Whether key energy-importing nations (Europe, Japan, South Korea, India, China) align, sanction, or remain neutral materially alters demand and supply equilibria.
+A practical framework for adjusting portfolio exposure as tensions between the United States/Israel and Iran escalate or de-escalate, with particular focus on the Strait of Hormuz oil supply risk over a 6–12 month horizon.
 
 ---
 
-## 2. Key Unknowns / Decision Inputs
+## Table of Contents
 
-Before positioning for this scenario, the following unknowns should be explicitly acknowledged:
-
-| Unknown | Why It Matters |
-|---|---|
-| Hormuz closure probability and duration | Determines magnitude of oil supply shock |
-| Iranian retaliatory capability | Affects regional spillover and global shipping risk premium |
-| US strategic petroleum reserve (SPR) deployment | Can dampen short-term oil price spike |
-| Global demand environment at onset | Conflict hitting a recession is different from hitting an expansion |
-| Saudi/UAE production response | OPEC spare capacity could offset supply disruption |
-| Dollar safe-haven demand | Affects EM and commodity-linked currencies |
-| Credit market conditions at onset | High-yield spreads and leverage ratios affect contagion risk |
+1. [Understanding the Conflict Spectrum](#understanding-the-conflict-spectrum)
+2. [Key Risk Factors to Monitor](#key-risk-factors-to-monitor)
+3. [Sector Playbook](#sector-playbook)
+4. [ETF Toolkit](#etf-toolkit)
+5. [Individual Stock Considerations](#individual-stock-considerations)
+6. [Hedging Strategies](#hedging-strategies)
+7. [Scenario-Based Positioning](#scenario-based-positioning)
+8. [Portfolio Sizing Guidelines](#portfolio-sizing-guidelines)
+9. [Key Indicators & Triggers](#key-indicators--triggers)
 
 ---
 
-## 3. Asset Classes: General Tendencies Under This Scenario
+## Understanding the Conflict Spectrum
 
-These are general observations about how broad asset classes have historically behaved in energy-supply-shock, geopolitical-risk-premium scenarios. Past performance in analogous events does not guarantee future behavior.
+US/Israel–Iran tensions range from routine diplomatic pressure to full-scale military engagement. The single most consequential variable at every level is the probability and duration of a Strait of Hormuz disruption, through which roughly 20–25% of globally traded oil flows.
 
-### Assets That Have Historically Benefited
-
-- **Energy commodities (crude oil, natural gas):** Direct supply disruption and risk premium. The larger the Hormuz disruption, the more pronounced the move. Natural gas benefits if LNG trade routes are affected.
-- **Precious metals (gold, silver):** Traditional safe-haven demand and inflation hedge. Gold in particular tends to benefit from geopolitical uncertainty and real-rate uncertainty.
-- **Defense and aerospace industrials:** Increased government procurement expectations. Tends to be a reflexive initial move; sustainability depends on actual contract flow.
-- **Short-duration, inflation-linked debt (e.g., TIPS-type instruments):** If the shock is read as inflationary, real yields on short-duration inflation-linked instruments can become relatively attractive.
-- **USD and other safe-haven currencies (CHF, JPY in risk-off regimes):** Capital flight from higher-risk regions typically strengthens reserve and safe-haven currencies.
-- **Domestic US energy producers:** Benefit from higher realized oil and gas prices; insulated from Hormuz disruption.
-
-### Assets That Tend to Face Pressure
-
-- **Airlines and global aviation:** Jet fuel (kerosene) is directly correlated with crude oil. Demand destruction from both higher costs and reduced travel sentiment. Effect is compounded if regional airspace closures occur.
-- **Emerging market risk assets (equities, credit, local currency bonds):** Risk-off rotation reduces capital flows to EMs. Countries that are net oil importers (e.g., Turkey, India, parts of Southeast Asia) face twin pressures: higher import costs and currency weakness. EM sovereign spreads typically widen.
-- **Long-duration growth / technology equities:** These are sensitive to real rate increases. If the inflation shock pushes long-end yields higher, high-multiple, long-duration equities reprice lower. The discount rate sensitivity is most acute in unprofitable or early-stage growth companies.
-- **Consumer discretionary (non-staple):** Higher energy and goods prices compress disposable income, reducing discretionary spending capacity, particularly in gasoline-intensive economies.
-- **Shipping (non-tanker):** Container and bulk shipping facing rerouting costs and insurance premium spikes if key straits or canals become restricted. Risk is asymmetric: tanker shipping may benefit while dry bulk and container face headwinds.
-- **Highly leveraged credit (high-yield, CLOs):** If a growth shock accompanies the energy shock, credit quality deteriorates and spreads widen. The more leveraged the issuer, the more vulnerable.
-- **Euro-area and Asian exporters:** Both regions are net energy importers. Higher energy costs act as a tax on their trade balances and corporate margins.
+| Level | Description | Example Events |
+|-------|-------------|----------------|
+| **1 – Low** | Background sanctions pressure, nuclear diplomacy | JCPOA negotiations, routine IAEA inspections |
+| **2 – Elevated** | Targeted strikes, proxy escalation | Israeli strikes on Iranian nuclear sites, Houthi/Hezbollah flare-ups |
+| **3 – High** | Direct Iranian retaliation, regional spillover | Iranian ballistic missile volleys, Red Sea shipping attacks |
+| **4 – Critical** | Hormuz blockade threat / mining operations | IRGC naval maneuvers, mine-laying, oil tanker seizures |
+| **5 – Hot** | Active US-Iran military engagement | US carrier group strikes on Iranian military infrastructure |
 
 ---
 
-## 4. Inflation vs. Growth Shock Matrix
+## Key Risk Factors to Monitor
 
-The dominant regime matters. Use this as a rough framework:
+### Geopolitical & Military
+- IAEA inspection access reports and enrichment level updates
+- Israeli Air Force operational posture and strike advisories
+- IRGC naval activity in the Strait of Hormuz and Gulf of Oman
+- Hezbollah/Houthi proxy activation levels
+- US CENTCOM force deployment changes (carrier strike group movements)
 
-| Scenario | Inflation Dominant | Growth Dominant | Stagflationary Mix |
-|---|---|---|---|
-| Likely if... | Short, sharp Hormuz disruption; SPR not deployed | Prolonged conflict; credit tightening; demand destruction | Extended conflict + pre-existing economic weakness |
-| Bonds (nominal) | Pressured (yields rise) | Supported (flight to quality) | Mixed; short-end anchored, long-end volatile |
-| Equities | Cyclical value outperforms growth | Defensives and quality outperform cyclicals | Broad de-rating; quality and cash flow resilience key |
-| Commodities | Broad strength | Energy up; others mixed | Energy strong; base metals may weaken on demand fears |
-| USD | Strengthens (inflation hedging + safe haven) | Strengthens (risk-off) | Strengthens |
+### Trade & Economic
+- Iranian crude oil export volumes (EIA, Kpler, Vortexa tracking)
+- US Strategic Petroleum Reserve (SPR) inventory and release announcements
+- OPEC spare capacity utilization and emergency meeting calls
+- Shipping insurance war-risk premiums for Persian Gulf routes
+- Global LNG spot prices (Hormuz closure affects LNG trade routes)
 
----
-
-## 5. Central Bank Reaction Function
-
-A critical overlay on any positioning framework:
-
-- **Tightening through the shock:** If central banks raise rates to fight an oil-driven CPI spike, rate-sensitive assets (long-duration bonds, growth equities, housing) face compounding pressure. This is the 1970s "policy mistake" risk.
-- **Looking through the shock:** If central banks treat the energy spike as transitory and hold rates, real yields may fall, supporting gold and long-duration assets. Curve steepening is likely.
-- **Cutting into the shock (growth fear dominant):** Rare in an inflationary shock, but possible if financial conditions tighten sharply. Would support bonds but signal deep growth concern.
-
-The uncertainty here is large. Investors should be cautious about positions that require correctly predicting the central bank response.
-
----
-
-## 6. Key Caveats and Risk Factors
-
-- **Scenarios rarely stay contained.** Initial market moves often overshoot; mean reversion is common if the conflict de-escalates or is briefer than expected. Positioning for sustained disruption has meaningful downside if peace talks emerge quickly.
-- **Correlation assumptions break down in stress.** Assets that are normally uncorrelated (e.g., equities and bonds) may sell off together if forced deleveraging occurs, as in 2022 or the early 2020 COVID shock.
-- **Liquidity matters.** Less liquid instruments (certain EM bonds, small-cap equities, private credit) may experience wider bid-ask spreads and forced selling unrelated to fundamentals.
-- **Geopolitical scenarios are not normally distributed.** Tail risks (use of unconventional weapons, broader regional war, cyber attacks on financial infrastructure) are difficult to price and can invalidate any base-case framework.
-- **Time horizon is decisive.** A 6–12 month horizon is long enough for initial panic to reverse but short enough that structural damage (supply chain rewiring, energy infrastructure destruction) may not be fully priced. Position sizing and rebalancing discipline matter more than initial entry.
-- **Second- and third-order effects are underappreciated.** Insurance markets, trade finance, letters of credit for Middle Eastern trade, and global food prices (natural gas → fertilizer → food) are transmission channels that can amplify initial shocks well beyond energy markets.
+### Financial / Market
+- Brent crude and WTI front-month futures (immediate escalation barometer)
+- Gold spot price vs. real yields (safe-haven demand signal)
+- Airline sector credit spreads and jet fuel crack spreads
+- USD/EM currency pairs for oil-importing EMs (INR, TRY, KRW)
+- VIX and oil volatility index (OVX) for risk-premium spikes
 
 ---
 
-## 7. Positioning Philosophy (General Principles)
+## Sector Playbook
 
-1. **Scenario humility:** No one knows with certainty how the conflict evolves. Build in asymmetry (defined risk on bearish bets, optionality on upside beneficiaries) rather than concentrated directional bets.
-2. **Hedge the tail, don't chase it:** The most catastrophic outcomes (full Hormuz closure for 6+ months) are low probability. Ensure core portfolio is resilient; use a smaller allocation to explicit hedges.
-3. **Avoid single-stock concentration in the most exposed sectors:** Airlines, EM financials in oil-importing countries, and highly leveraged consumer discretionary are structurally exposed but also subject to government intervention and idiosyncratic management decisions.
-4. **Monitor, don't predict:** Watch Hormuz shipping data, Iranian oil export volumes, US SPR announcements, and Fed communication for regime shifts that require repositioning.
-5. **Liquidity buffer:** In geopolitically uncertain environments, cash optionality has real value. Maintaining dry powder to exploit dislocations is a legitimate strategy.
+### Overweight in Escalation Scenarios
+
+| Sector | Rationale | Representative Names |
+|--------|-----------|---------------------|
+| **Defense & Aerospace** | Direct beneficiary of elevated military spending; CENTCOM buildup | LMT, RTX, NOC, GD, HII, BA |
+| **US Oil & Gas Producers** | Higher realized prices; insulated from Hormuz supply shock | XOM, CVX, COP, PXD, EOG |
+| **Oil Field Services** | Activity increases with elevated oil price; onshoring of energy supply chain | SLB, HAL, BKR |
+| **Crude Tanker Shipping** | Hormuz disruption reroutes tanker demand; war-risk premiums spike rates | STNG, FRO, DHT, TK |
+| **Gold & Precious Metal Miners** | Safe-haven demand; inflation hedge; real-yield uncertainty | NEM, AEM, GOLD, WPM |
+| **Cybersecurity** | State-sponsored Iranian cyber activity spikes during military tensions | CRWD, PANW, FTNT |
+| **Domestic Natural Gas / LNG Exporters** | European energy security premium; LNG re-routing demand | LNG, CQP |
+
+### Underweight / Reduce in Escalation Scenarios
+
+| Sector | Rationale | Representative Names |
+|--------|-----------|---------------------|
+| **Airlines** | Jet fuel cost surge, airspace closures, demand destruction | DAL, UAL, AAL, LUV, SAVE |
+| **EM Risk Assets (oil-importing EMs)** | Higher import costs + capital flight + currency weakness | Broad EM exposure in Turkey, India, SE Asia |
+| **Long-Duration Growth / High-Multiple Tech** | Real rate increase from oil-driven inflation reprices long-duration equities | High P/E, pre-profit growth names broadly |
+| **Consumer Discretionary** | Higher energy costs compress disposable income | AMZN (retail segment), RCL, CCL, NCLH |
+| **Container / Dry Bulk Shipping** | Rerouting costs, insurance spikes, demand destruction; asymmetric vs. tankers | ZIM, DAC, SBLK |
+| **Euro-Area Industrials** | Europe is a net energy importer; higher energy costs act as a margin tax | Broad European industrial exposure |
 
 ---
 
-*Last updated: scenario framework only — no live market data or specific recommendations.*
+## ETF Toolkit
+
+### Conflict Escalation — Long Exposure
+
+| ETF | Focus | Ticker |
+|-----|-------|--------|
+| iShares US Aerospace & Defense | Defense sector basket | ITA |
+| SPDR S&P Aerospace & Defense | Broader defense basket | XAR |
+| SPDR Energy Select Sector | US large-cap energy | XLE |
+| SPDR S&P Oil & Gas Exploration & Production | E&P-focused energy | XOP |
+| United States Oil Fund | Front-month WTI crude exposure | USO |
+| iShares S&P GSCI Commodity-Indexed Trust | Broad commodity / energy-heavy | GSG |
+| SPDR Gold Shares | Gold / safe haven | GLD |
+| VanEck Gold Miners | Gold mining equities | GDX |
+| First Trust NASDAQ Cybersecurity | Cybersecurity | CIBR |
+
+### Conflict Escalation — Short / Hedge Exposure
+
+| ETF | Focus | Ticker |
+|-----|-------|--------|
+| US Global Jets ETF | Airline sector | JETS |
+| iShares MSCI Emerging Markets | EM broad | EEM |
+| Vanguard FTSE Emerging Markets | EM broad | VWO |
+| iShares 20+ Year Treasury Bond | Long-duration bonds (short if inflation dominant) | TLT |
+
+> **Note:** Short exposure to airline and EM names can be achieved via puts, inverse ETFs, or direct short selling. Long TLT / short TLT positioning depends on whether the inflation or growth shock regime is dominant — see the regime matrix in [Scenario-Based Positioning](#scenario-based-positioning).
+
+---
+
+## Individual Stock Considerations
+
+### Long Candidates
+
+**Defense:**
+- **LMT (Lockheed Martin)** – Missile systems (ATACMS, THAAD), F-35 production; direct CENTCOM/INDOPACOM beneficiary
+- **RTX (Raytheon Technologies)** – Patriot air defense systems; Israel and Gulf state sales pipeline
+- **HII (Huntington Ingalls)** – Nuclear carrier/submarine builder; navy presence in Persian Gulf expansion play
+- **NOC (Northrop Grumman)** – B-21 bomber, missile defense systems; strategic strike capability
+
+**Energy:**
+- **XOM (ExxonMobil)** – Largest US integrated; direct earnings benefit from $10–20/bbl oil price move
+- **COP (ConocoPhillips)** – Pure-play US E&P; highly levered to oil price upside
+- **LNG (Cheniere Energy)** – US LNG exporter; Europe redirects away from Middle Eastern supply
+
+**Tanker Shipping:**
+- **STNG (Scorpio Tankers)** – Product tanker fleet; war-risk premium + rerouting directly lifts day rates
+- **FRO (Frontline)** – VLCC crude tanker operator; most sensitive to Persian Gulf supply disruption
+
+**Precious Metals:**
+- **NEM (Newmont)** – Largest gold miner; leveraged to gold price with operational diversification
+- **WPM (Wheaton Precious Metals)** – Streaming model; less operational risk than direct miners
+
+**Cybersecurity:**
+- **CRWD (CrowdStrike)** – Government/defense contracts; Iranian state-sponsored threat detection
+
+### Short / Avoid Candidates
+
+- **DAL / UAL / AAL** – Airlines: fuel cost surge is direct earnings headwind; demand destruction risk
+- **RCL / CCL** – Cruise lines: fuel costs + risk-off consumer sentiment + Red Sea rerouting
+- **ZIM (ZIM Integrated Shipping)** – Container shipping most exposed to Red Sea / Suez Canal disruption
+- **High-P/E growth names broadly** – Real rate rise from oil inflation reprices long-duration cash flows
+
+---
+
+## Hedging Strategies
+
+### Options-Based Hedges
+
+1. **Put spreads on JETS** – Buy ATM put / sell OTM put; defined-risk hedge on airline sector selloff from fuel cost spike
+2. **Airline individual puts (DAL, UAL)** – 3–6 month tenor; relatively cheap during low-volatility periods
+3. **Crude oil call spreads (USO, CL futures)** – Asymmetric upside hedge on Hormuz disruption spike; defined risk
+4. **SPY put spreads** – Broad market hedge for systemic risk spill-over at Level 4–5
+
+### Commodity Hedges
+
+- **Long crude oil futures or call options** – Direct hedge against Hormuz supply shock; most liquid expression
+- **Long natural gas (NG futures or UNG)** – LNG trade-route disruption and European energy security bid
+- **Long gold (GLD, /GC futures)** – Safe-haven + inflation hedge; performs in both risk-off and inflation-dominant regimes
+
+### Currency Hedges
+
+- **Long USD** – Safe-haven flows in risk-off episodes; via USD futures or short EM currency pairs
+- **Long CHF / Long JPY** – Traditional safe-haven currencies during Middle East escalation
+- **Short INR, TRY, KRW** – Oil-importing EM currencies most vulnerable to Hormuz disruption (via FX forwards or ETF hedges)
+
+### Volatility Plays
+
+- **Long VIX calls or VIX call spreads** – Escalation events cause sharp VIX spikes; 30–60 day tenor
+- **Long OVX (crude oil volatility)** – More direct expression of Hormuz uncertainty than equity volatility
+
+---
+
+## Scenario-Based Positioning
+
+### Scenario A: Israeli/US Targeted Strikes on Iranian Nuclear Sites (Level 2)
+
+**Probability driver:** Israeli Air Force operational reports, IAEA enrichment threshold breach
+
+| Action | Rationale |
+|--------|-----------|
+| Add XLE, XOP | Geopolitical risk premium in crude; producers benefit |
+| Add ITA, RTX, LMT | Defense sector bid; resupply contracts expected |
+| Add GLD 5–10% | Safe-haven demand spike |
+| Buy crude call spreads (USO or CL) | Defined-risk play on oil spike |
+| Trim airline exposure (DAL, UAL) | Fuel cost headwind begins |
+
+### Scenario B: Iranian Ballistic Missile Retaliation / Regional Proxy Escalation (Level 3)
+
+**Probability driver:** IRGC/Hezbollah/Houthi activation, Iranian government statements, shipping attack reports
+
+| Action | Rationale |
+|--------|-----------|
+| Add tanker names (STNG, FRO) | War-risk premium + rerouting lifts rates directly |
+| Increase GLD, NEM | Sustained safe-haven demand |
+| Add CRWD, PANW | Iranian cyber retaliation risk |
+| Reduce / short JETS | Airline fuel costs + airspace closures |
+| Reduce EM exposure (EEM, VWO) | Risk-off capital flight from oil-importing EMs |
+| Buy VIX calls (30–60 day) | Volatility spike hedge |
+
+### Scenario C: Hormuz Blockade Threat / Mining Operations (Level 4)
+
+**Probability driver:** IRGC naval maneuvers, tanker seizures, mine-laying reports, CENTCOM advisories
+
+| Action | Rationale |
+|--------|-----------|
+| Significantly increase XLE, XOP, COP | $20–50/bbl oil spike scenario; producers are primary beneficiary |
+| Max defense allocation (ITA, XAR, HII, LMT) | US naval surge to reopen strait; defense spending surge |
+| Long crude futures / CL call spreads aggressively | Most direct expression of supply shock |
+| Reduce long-duration bonds (short TLT) | Inflation shock drives yields higher |
+| Short airlines, cruise lines | Fuel cost + demand destruction compounding |
+| Long USD, short INR/TRY | EM oil importers under maximum pressure |
+| Reduce high-P/E growth equities | Real rate increase reprices long-duration cash flows |
+
+### Scenario D: Diplomatic De-escalation / Ceasefire (Level 1)
+
+**Probability driver:** UN-brokered talks, US-Iran back-channel negotiations, IAEA agreement, regional mediator (Qatar, Oman)
+
+| Action | Rationale |
+|--------|-----------|
+| Trim energy overweights (XLE, XOP) | Risk premium deflates; crude reverses |
+| Trim defense overweights (ITA, XAR) | Peace dividend; sector rotation out |
+| Reduce GLD allocation | Risk-on; safe havens deflate |
+| Add airline exposure back (JETS, DAL) | Fuel cost normalization; travel demand recovery |
+| Selectively add EM exposure | Risk-on; oil-importing EMs benefit from crude decline |
+| Close crude long hedges | Hormuz risk premium unwinds |
+
+---
+
+## Portfolio Sizing Guidelines
+
+| Conflict Level | Energy (Exploration & Production/Tanker) | Defense | Safe Havens (Gold/USD) | Hedges | Airline / EM Exposure |
+|---------------|---------------------|---------|------------------------|--------|----------------------|
+| 1 – Low | 5–8% | 5% | 5% | Minimal | Normal weight |
+| 2 – Elevated | 10–15% | 8% | 8% | 2–3% options | Trim 25–50% |
+| 3 – High | 15–20% | 12% | 12% | 4–6% options | Reduce to minimal |
+| 4 – Critical | 20–25% | 15–20% | 15% | 6–10% options | Exit / short |
+| 5 – Hot | 25%+ | 20%+ | 20%+ | Maximum hedge | Short / fully out |
+
+> These are general guidelines. Adjust based on your individual risk tolerance, existing portfolio composition, and investment time horizon.
+
+---
+
+## Key Indicators & Triggers
+
+### Early Warning Signals (Add Defensive Positioning)
+- IAEA report showing Iranian enrichment above 60% or inspector access denial
+- IRGC conducting live-fire exercises in the Strait of Hormuz
+- Iranian crude exports falling sharply (Kpler/Vortexa data)
+- Oil tanker war-risk insurance premiums spiking above historical norms
+- US CENTCOM deploying additional carrier strike group to the region
+
+### De-escalation Signals (Reduce Defensive Positioning)
+- US-Iran diplomatic back-channel confirmed (Qatar/Oman mediation)
+- IAEA inspectors restored to Iranian sites
+- Iranian crude exports resuming / SPR releases announced
+- Regional ceasefire agreements (Hezbollah, Houthi stand-down)
+- Brent crude retracing below pre-escalation levels on high volume
+
+### Real-Time Data Sources
+- [EIA Weekly Petroleum Status Report](https://www.eia.gov/petroleum/supply/weekly/) *(weekly supply/inventory data)*
+- [IAEA Press Releases](https://www.iaea.org/newscenter/pressreleases)
+- [US CENTCOM News](https://www.centcom.mil/MEDIA/NEWS-ARTICLES/)
+- [Kpler Crude Oil Flows](https://www.kpler.com/) *(subscription)*
+- [Vortexa Oil Market Analytics](https://www.vortexa.com/) *(subscription)*
+- [CSIS Middle East Program](https://www.csis.org/programs/middle-east-program)
+- [US EIA Short-Term Energy Outlook](https://www.eia.gov/steo/) *(monthly price and production forecasts)*
+
+---
+
+*This guide is for informational purposes only and does not constitute financial advice. Always conduct your own due diligence and consult a qualified financial advisor before making investment decisions.*
