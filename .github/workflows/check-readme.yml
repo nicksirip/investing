@@ -1,0 +1,42 @@
+name: README up-to-date check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  check-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify all files are listed in README
+        shell: bash
+        run: |
+          missing=()
+
+          shopt -s nullglob
+          for f in scenarios/* think-or-swim/*; do
+            # skip subdirectories
+            [ -f "$f" ] || continue
+            filename=$(basename "$f")
+            dir=$(dirname "$f")
+            # grep -F matches the literal markdown link target: (dir/filename)
+            if ! grep -qF "($dir/$filename)" README.md; then
+              missing+=("$f")
+            fi
+          done
+
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "The following files are not listed in README.md:"
+            printf '  %s\n' "${missing[@]}"
+            echo ""
+            echo "Please add an entry for each file to the appropriate table in README.md."
+            exit 1
+          fi
+
+          echo "All files are listed in README.md."
