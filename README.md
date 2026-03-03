@@ -27,7 +27,10 @@ Each guide provides a practical framework for adjusting portfolio exposure as a 
 | [mortgage-lender-collapse-positioning-guide.md](scenarios/mortgage-lender-collapse-positioning-guide.md) | Positioning as stress in the mortgage lending sector escalates toward systemic lender failures and housing market contagion |
 | [us-bank-failure-positioning-guide.md](scenarios/us-bank-failure-positioning-guide.md) | Positioning as stress in the US banking system escalates or stabilizes |
 | [us-china-conflict-positioning-guide.md](scenarios/us-china-conflict-positioning-guide.md) | Exposure adjustments as tensions between the United States and China escalate or de-escalate |
+| [us-debt-crisis-positioning-guide.md](scenarios/us-debt-crisis-positioning-guide.md) | Positioning through US sovereign debt stress — from debt ceiling brinkmanship through credit rating downgrade and Treasury market dysfunction |
 | [us-recession-positioning-guide.md](scenarios/us-recession-positioning-guide.md) | Portfolio positioning through the US economic cycle from slowdown through recession and recovery |
+| [russia-nato-conflict-positioning-guide.md](scenarios/russia-nato-conflict-positioning-guide.md) | Exposure adjustments as Russia/NATO tensions escalate or de-escalate, with focus on European energy security, defense spending, and commodity supply disruptions |
+| [stagflation-positioning-guide.md](scenarios/stagflation-positioning-guide.md) | Portfolio positioning through a stagflationary environment of persistently high inflation combined with stagnant or negative economic growth |
 
 ---
 
