@@ -21,12 +21,18 @@ Each guide provides a practical framework for adjusting portfolio exposure as a 
 | File | Description |
 |------|-------------|
 | [ai-bubble-positioning-guide.md](scenarios/ai-bubble-positioning-guide.md) | Portfolio positioning through the inflation and deflation of an AI valuation bubble |
+| [deflation-positioning-guide.md](scenarios/deflation-positioning-guide.md) | Portfolio positioning through a deflationary or Japan-style lost-decade environment of falling prices, near-zero rates, and prolonged balance sheet deleveraging |
+| [global-trade-war-positioning-guide.md](scenarios/global-trade-war-positioning-guide.md) | Exposure adjustments as broad tariff escalation across multiple trading partners disrupts global supply chains and fragments the rules-based trading system |
 | [holding-cash-positioning-guide.md](scenarios/holding-cash-positioning-guide.md) | Tax-efficient framework for parking capital and systematically deploying it as buying opportunities emerge |
 | [iran-conflict-general-guide.md](scenarios/iran-conflict-general-guide.md) | Exposure adjustments as US/Israel–Iran tensions escalate or de-escalate, with focus on Strait of Hormuz oil supply risk |
 | [monthly-cash-income-guide.md](scenarios/monthly-cash-income-guide.md) | A practical, tax-efficient framework for structuring a portfolio to generate reliable monthly cash income sufficient to cover living expenses |
 | [mortgage-lender-collapse-positioning-guide.md](scenarios/mortgage-lender-collapse-positioning-guide.md) | Positioning as stress in the mortgage lending sector escalates toward systemic lender failures and housing market contagion |
+| [pandemic-positioning-guide.md](scenarios/pandemic-positioning-guide.md) | Portfolio positioning through a global pandemic or public health crisis — from early outbreak detection through peak disruption and recovery |
+| [russia-nato-conflict-positioning-guide.md](scenarios/russia-nato-conflict-positioning-guide.md) | Exposure adjustments as Russia/NATO tensions escalate or de-escalate, with focus on European energy security, defense spending, and commodity supply disruptions |
+| [stagflation-positioning-guide.md](scenarios/stagflation-positioning-guide.md) | Portfolio positioning through a stagflationary environment of persistently high inflation combined with stagnant or negative economic growth |
 | [us-bank-failure-positioning-guide.md](scenarios/us-bank-failure-positioning-guide.md) | Positioning as stress in the US banking system escalates or stabilizes |
 | [us-china-conflict-positioning-guide.md](scenarios/us-china-conflict-positioning-guide.md) | Exposure adjustments as tensions between the United States and China escalate or de-escalate |
+| [us-debt-crisis-positioning-guide.md](scenarios/us-debt-crisis-positioning-guide.md) | Positioning through US sovereign debt stress — from debt ceiling brinkmanship through credit rating downgrade and Treasury market dysfunction |
 | [us-recession-positioning-guide.md](scenarios/us-recession-positioning-guide.md) | Portfolio positioning through the US economic cycle from slowdown through recession and recovery |
 
 ---
