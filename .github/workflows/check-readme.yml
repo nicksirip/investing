@@ -40,3 +40,25 @@ jobs:
           fi
 
           echo "All files are listed in README.md."
+
+      - name: Verify disclaimer in scenario guides
+        shell: bash
+        run: |
+          missing_disclaimer=()
+
+          shopt -s nullglob
+          for f in scenarios/*.md; do
+            if ! grep -qF "The author is not a financial advisor" "$f"; then
+              missing_disclaimer+=("$f")
+            fi
+          done
+
+          if [ ${#missing_disclaimer[@]} -gt 0 ]; then
+            echo "The following scenario guides are missing the required disclaimer:"
+            printf '  %s\n' "${missing_disclaimer[@]}"
+            echo ""
+            echo "Please add the disclaimer to each file before merging."
+            exit 1
+          fi
+
+          echo "All scenario guides contain the required disclaimer."
