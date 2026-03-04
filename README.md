@@ -24,6 +24,7 @@ Each guide provides a practical framework for adjusting portfolio exposure as a 
 | [holding-cash-positioning-guide.md](scenarios/holding-cash-positioning-guide.md) | Tax-efficient framework for parking capital and systematically deploying it as buying opportunities emerge |
 | [iran-conflict-general-guide.md](scenarios/iran-conflict-general-guide.md) | Exposure adjustments as US/Israel–Iran tensions escalate or de-escalate, with focus on Strait of Hormuz oil supply risk |
 | [monthly-cash-income-guide.md](scenarios/monthly-cash-income-guide.md) | A practical, tax-efficient framework for structuring a portfolio to generate reliable monthly cash income sufficient to cover living expenses |
+| [normal-market-positioning-guide.md](scenarios/normal-market-positioning-guide.md) | Portfolio construction and sector rotation across the normal economic cycle — early, mid, late cycle, and cycle peak — without an extreme macro or geopolitical backdrop |
 | [mortgage-lender-collapse-positioning-guide.md](scenarios/mortgage-lender-collapse-positioning-guide.md) | Positioning as stress in the mortgage lending sector escalates toward systemic lender failures and housing market contagion |
 | [us-bank-failure-positioning-guide.md](scenarios/us-bank-failure-positioning-guide.md) | Positioning as stress in the US banking system escalates or stabilizes |
 | [us-china-conflict-positioning-guide.md](scenarios/us-china-conflict-positioning-guide.md) | Exposure adjustments as tensions between the United States and China escalate or de-escalate |
