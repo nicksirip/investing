@@ -288,4 +288,4 @@ Russia/NATO tensions range from low-level proxy conflict to direct military enga
 
 ---
 
-*This guide is for informational purposes only and does not constitute financial advice. Always conduct your own due diligence and consult a qualified financial advisor before making investment decisions.*
+*This guide is for informational and educational purposes only. The author is not a financial advisor, and nothing here constitutes financial advice or a recommendation to buy or sell any security. All investments involve risk, including the potential loss of principal. Past performance is not indicative of future results. Always do your own research and due diligence, and consult a qualified financial advisor before making any investment decisions.*
