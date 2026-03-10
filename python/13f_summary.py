@@ -282,9 +282,13 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
 
     The SEC DERA quarterly 13F zips (https://www.sec.gov/dera/data/form-13f-data-sets)
     contain at minimum:
-      - SUBMISSION.tsv  – filing metadata (ACCESSION_NO, FILED, CIK, COMPANYNAME, FORM_TYPE, …)
-      - INFOTABLE.tsv   – per-holding rows (ACCESSION_NO, NAMEOFISSUER, TITLEOFCLASS, CUSIP,
-                          VALUE [thousands USD], SSHPRNAMT, …)
+      - SUBMISSION.tsv  – filing metadata
+          Columns: ACCESSION_NUMBER, FILING_DATE (DD-MON-YYYY), SUBMISSIONTYPE,
+                   CIK, PERIODOFREPORT
+          Note: company name is NOT in SUBMISSION; it lives in COVERPAGE.
+      - INFOTABLE.tsv   – per-holding rows
+          Columns: ACCESSION_NUMBER, INFOTABLE_SK, NAMEOFISSUER, TITLEOFCLASS,
+                   CUSIP, VALUE (dollars since Jan 2023), SSHPRNAMT, SSHPRNAMTTYPE, …
 
     Returns a filer_holdings defaultdict(list) in the same format used by the HTTP-based path:
       { "cik|company_name": [{"date": date, "holdings": [{"name":…, "title":…,
@@ -326,14 +330,27 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
             f"None of {candidates} found in columns: {list(df.columns)}"
         )
 
-    date_col     = _find_col(sub_df, ["FILED", "FILED_DATE", "FILEDATE"])
-    form_col     = _find_col(sub_df, ["FORM_TYPE", "FORMTYPE", "TYPE"])
+    # FILING_DATE is the current spec name; older vintages used FILED / FILEDATE
+    date_col     = _find_col(sub_df, ["FILING_DATE", "FILED", "FILED_DATE", "FILEDATE"])
+    # SUBMISSIONTYPE is the current spec name; older vintages used FORM_TYPE / FORMTYPE
+    form_col     = _find_col(sub_df, ["SUBMISSIONTYPE", "FORM_TYPE", "FORMTYPE", "TYPE"])
     cik_col      = _find_col(sub_df, ["CIK", "CIK_NO", "CIKNUMBER"])
-    name_col     = _find_col(sub_df, ["COMPANYNAME", "COMPANY_NAME", "CONFORMED_NAME", "ENTITY_NAME"])
-    acc_col_sub  = _find_col(sub_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
+    acc_col_sub  = _find_col(sub_df, ["ACCESSION_NUMBER", "ACCESSION_NO", "ACCESSIONNO"])
+
+    # Company name is in COVERPAGE (not SUBMISSION) per the SEC DERA spec.
+    # Accept it if present for convenience; fall back to CIK-only filer key.
+    try:
+        name_col = _find_col(sub_df, ["COMPANYNAME", "COMPANY_NAME", "CONFORMED_NAME",
+                                      "ENTITY_NAME", "FILINGMANAGER_NAME"])
+    except KeyError:
+        name_col = None
+        logging.info(
+            "No company-name column found in SUBMISSION (expected — per spec, "
+            "company name lives in COVERPAGE). Filer keys will use CIK only."
+        )
 
     # Locate key columns in INFOTABLE
-    acc_col_info = _find_col(info_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
+    acc_col_info = _find_col(info_df, ["ACCESSION_NUMBER", "ACCESSION_NO", "ACCESSIONNO"])
     issuer_col   = _find_col(info_df, ["NAMEOFISSUER", "NAME_OF_ISSUER"])
     title_col    = _find_col(info_df, ["TITLEOFCLASS", "TITLE_OF_CLASS"])
     cusip_col    = _find_col(info_df, ["CUSIP"])
@@ -342,7 +359,15 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
 
     # Filter SUBMISSION to 13F-HR filings within the date range.
     # Compare as Timestamps (avoids NaT vs datetime.date TypeError in some pandas versions).
-    sub_df[date_col] = pd.to_datetime(sub_df[date_col], errors="coerce")
+    # The spec uses DD-MON-YYYY (e.g. "15-JAN-2026"). format="mixed" tells pandas to
+    # parse each value individually via dateutil without emitting an inference warning.
+    try:
+        sub_df[date_col] = pd.to_datetime(
+            sub_df[date_col], format="mixed", dayfirst=True, errors="coerce"
+        )
+    except TypeError:
+        # pandas < 2.0 does not support format="mixed"; fall back gracefully
+        sub_df[date_col] = pd.to_datetime(sub_df[date_col], infer_datetime_format=True, errors="coerce")
     ts_start = pd.Timestamp(start_date)
     ts_end   = pd.Timestamp(end_date)
     mask = (
@@ -377,9 +402,9 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
     for _, row in filtered_sub.iterrows():
         accession  = row[acc_col_sub]
         cik        = str(row.get(cik_col, "") or "").strip()
-        company    = str(row.get(name_col, "") or "").strip()
+        company    = str(row.get(name_col, "") or "").strip() if name_col else ""
         filed_date = row[date_col].date()
-        filer_key  = f"{cik}|{company}"
+        filer_key  = f"{cik}|{company}" if company else cik
 
         holding_rows = info_by_accession.get(accession)
         if holding_rows is None or holding_rows.empty:
@@ -391,10 +416,11 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
             try:
                 value_str = str(hr.get(value_col, "0") or "0").strip()
                 try:
-                    value = int(re.sub(r"[^\d\-]", "", value_str)) * 1000
+                    # Since January 2023 SEC reports VALUE in dollars (not thousands).
+                    value = int(re.sub(r"[^\d\-]", "", value_str))
                 except Exception:
                     try:
-                        value = int(float(value_str) * 1000)
+                        value = int(float(value_str))
                     except Exception:
                         value = 0
                 shares_str = str(hr.get(shares_col, "") or "").strip()

@@ -4,13 +4,23 @@ Generates python/fixtures/sample_13f.zip – a small but realistic SEC DERA-form
 13F dataset zip that can be used for local development and testing without
 downloading the multi-GB official quarterly archive.
 
-The zip mimics the layout of the files from:
+Column names and formats follow the official SEC DERA specification:
   https://www.sec.gov/dera/data/form-13f-data-sets
 
 Contents
 --------
-  SUBMISSION.tsv   filing metadata (16 rows: 8 filers × 2 filing epochs)
-  INFOTABLE.tsv    holdings        (~130 rows)
+  SUBMISSION.tsv   filing metadata (columns: ACCESSION_NUMBER, FILING_DATE,
+                   SUBMISSIONTYPE, CIK, PERIODOFREPORT)
+  INFOTABLE.tsv    holdings (columns: ACCESSION_NUMBER, INFOTABLE_SK,
+                   NAMEOFISSUER, TITLEOFCLASS, CUSIP, VALUE, SSHPRNAMT,
+                   SSHPRNAMTTYPE)
+
+Notes
+-----
+  * Dates are in DD-MON-YYYY format (e.g. 15-JAN-2026) as per the spec.
+  * VALUE is in dollars (not thousands). Starting January 3, 2023 the SEC
+    reports market value rounded to the nearest dollar.
+  * SUBMISSION has no COMPANYNAME column; company name lives in COVERPAGE.
 
 Scenarios covered
 -----------------
@@ -23,6 +33,7 @@ Scenarios covered
     and at least one new position (in latest, not in earliest)
   * Dollar values ensure several securities exceed the $1 M net-change threshold
   * The SUBMISSION.tsv is written with a UTF-8 BOM to validate BOM-stripping
+  * 13F-HR/A amendment rows are included to verify they are filtered out
 
 Usage
 -----
@@ -62,8 +73,10 @@ SECURITIES = {
 # ---------------------------------------------------------------------------
 # Each filer has:
 #   cik, name,
-#   early_holdings: {cusip: (value_thousands, shares)}   Jan-15 filing
-#   late_holdings:  {cusip: (value_thousands, shares)}   Feb-28 filing
+#   early_holdings: {cusip: (value_dollars, shares)}   Jan-15 filing
+#   late_holdings:  {cusip: (value_dollars, shares)}   Feb-28 filing
+#
+# Values are in dollars (as per the SEC spec for filings since Jan 2023).
 #
 # Design rules applied per filer:
 #   - one ETF in each filing (for exclusion test)
@@ -245,36 +258,55 @@ FILERS = [
     },
 ]
 
-# Filing dates
-EARLY_DATE = "2026-01-15"
-LATE_DATE  = "2026-02-28"
+# Filing dates in DD-MON-YYYY format (as required by the SEC DERA spec)
+EARLY_DATE     = "15-JAN-2026"
+LATE_DATE      = "28-FEB-2026"
+PERIOD_OF_RPT  = "31-DEC-2025"   # Q4 2025 holdings period
 
 
 def _submission_rows():
-    """Generate tab-separated rows for SUBMISSION.tsv."""
-    header = "ACCESSION_NO\tFILED\tCIK\tCOMPANYNAME\tFORM_TYPE"
+    """Generate tab-separated rows for SUBMISSION.tsv.
+
+    Columns match the SEC DERA spec exactly:
+      ACCESSION_NUMBER, FILING_DATE, SUBMISSIONTYPE, CIK, PERIODOFREPORT
+    Note: COMPANYNAME is NOT in SUBMISSION; it lives in COVERPAGE.
+    """
+    header = "ACCESSION_NUMBER\tFILING_DATE\tSUBMISSIONTYPE\tCIK\tPERIODOFREPORT"
     rows = [header]
     for i, f in enumerate(FILERS):
         early_acc = f"0001{i:06d}-26-000001"
         late_acc  = f"0001{i:06d}-26-000002"
-        rows.append(f"{early_acc}\t{EARLY_DATE}\t{f['cik']}\t{f['name']}\t13F-HR")
-        rows.append(f"{late_acc}\t{LATE_DATE}\t{f['cik']}\t{f['name']}\t13F-HR")
-        # Extra non-13F row (amendment) – should be filtered out
-        rows.append(f"0001{i:06d}-26-000003\t{LATE_DATE}\t{f['cik']}\t{f['name']}\t13F-HR/A")
+        rows.append(f"{early_acc}\t{EARLY_DATE}\t13F-HR\t{f['cik']}\t{PERIOD_OF_RPT}")
+        rows.append(f"{late_acc}\t{LATE_DATE}\t13F-HR\t{f['cik']}\t{PERIOD_OF_RPT}")
+        # Amendment row – code must filter these out (only 13F-HR, not 13F-HR/A)
+        rows.append(f"0001{i:06d}-26-000003\t{LATE_DATE}\t13F-HR/A\t{f['cik']}\t{PERIOD_OF_RPT}")
     return "\n".join(rows)
 
 
 def _infotable_rows():
-    """Generate tab-separated rows for INFOTABLE.tsv."""
-    header = "ACCESSION_NO\tNAMEOFISSUER\tTITLEOFCLASS\tCUSIP\tVALUE\tSSHPRNAMT"
+    """Generate tab-separated rows for INFOTABLE.tsv.
+
+    Columns match the SEC DERA spec:
+      ACCESSION_NUMBER, INFOTABLE_SK, NAMEOFISSUER, TITLEOFCLASS, CUSIP,
+      VALUE, SSHPRNAMT, SSHPRNAMTTYPE
+    VALUE is in dollars (not thousands) as per the spec for post-2023 filings.
+    """
+    header = (
+        "ACCESSION_NUMBER\tINFOTABLE_SK\tNAMEOFISSUER\tTITLEOFCLASS"
+        "\tCUSIP\tVALUE\tSSHPRNAMT\tSSHPRNAMTTYPE"
+    )
     rows = [header]
     for i, f in enumerate(FILERS):
         early_acc = f"0001{i:06d}-26-000001"
         late_acc  = f"0001{i:06d}-26-000002"
+        sk = 1
         for acc, holdings in ((early_acc, f["early"]), (late_acc, f["late"])):
             for cusip, (value, shares) in holdings.items():
                 name, title = SECURITIES[cusip]
-                rows.append(f"{acc}\t{name}\t{title}\t{cusip}\t{value}\t{shares}")
+                rows.append(
+                    f"{acc}\t{sk}\t{name}\t{title}\t{cusip}\t{value}\t{shares}\tSH"
+                )
+                sk += 1
     return "\n".join(rows)
 
 

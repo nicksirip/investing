@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 *.pyo
 .ipynb_checkpoints/
+# 13F summary script output files
+13f_summary_*.csv
