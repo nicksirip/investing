@@ -510,11 +510,22 @@ def main():
             "(buys / sells) by comparing holdings across the two quarters."
         ),
     )
+    parser.add_argument(
+        "--top-n", "-n",
+        metavar="N",
+        type=int,
+        default=10,
+        help=(
+            "Number of top holdings, buys, and sells to display and save to CSV. "
+            "Defaults to 10."
+        ),
+    )
     args = parser.parse_args()
 
     # CLI flags take precedence over the in-file config constant
     zip_path       = args.zip or LOCAL_ZIP_PATH
     prior_zip_path = args.prior_zip
+    top_n          = args.top_n
 
     logging.info("Starting 13F summary process")
 
@@ -706,10 +717,10 @@ def main():
     df_sells = df[df["net_change_usd"] <= -MIN_CHANGE_USD].sort_values("net_change_usd")
     df_top_holdings = df.sort_values("latest_value_usd", ascending=False)
 
-    # Top 10 holdings
-    top10_holdings = df_top_holdings.head(10).copy()
-    top10_buys = df_buys.head(10).copy()
-    top10_sells = df_sells.head(10).copy()
+    # Top N holdings / buys / sells
+    top_n_holdings = df_top_holdings.head(top_n).copy()
+    top_n_buys     = df_buys.head(top_n).copy()
+    top_n_sells    = df_sells.head(top_n).copy()
 
     # Print chat-friendly tables
     def usd(x):
@@ -718,28 +729,28 @@ def main():
         except:
             return x
 
-    print("\nTop 10 holdings (aggregated latest market value across top filers):")
-    if top10_holdings.empty:
+    print(f"\nTop {top_n} holdings (aggregated latest market value across top filers):")
+    if top_n_holdings.empty:
         print("  (no holdings found)")
     else:
-        print(top10_holdings[["name", "cusip", "latest_value_usd"]].to_string(index=False, formatters={"latest_value_usd": usd}))
+        print(top_n_holdings[["name", "cusip", "latest_value_usd"]].to_string(index=False, formatters={"latest_value_usd": usd}))
 
-    print("\nTop 10 buys by dollar volume (net change >= ${:,}):".format(MIN_CHANGE_USD))
-    if top10_buys.empty:
+    print(f"\nTop {top_n} buys by dollar volume (net change >= ${MIN_CHANGE_USD:,}):")
+    if top_n_buys.empty:
         print("  (no buys above threshold)")
     else:
-        print(top10_buys[["name", "cusip", "net_change_usd", "latest_value_usd"]].to_string(index=False, formatters={"net_change_usd": usd, "latest_value_usd": usd}))
+        print(top_n_buys[["name", "cusip", "net_change_usd", "latest_value_usd"]].to_string(index=False, formatters={"net_change_usd": usd, "latest_value_usd": usd}))
 
-    print("\nTop 10 sells by dollar volume (net change <= -${:,}):".format(MIN_CHANGE_USD))
-    if top10_sells.empty:
+    print(f"\nTop {top_n} sells by dollar volume (net change <= -${MIN_CHANGE_USD:,}):")
+    if top_n_sells.empty:
         print("  (no sells above threshold)")
     else:
-        print(top10_sells[["name", "cusip", "net_change_usd", "latest_value_usd"]].to_string(index=False, formatters={"net_change_usd": usd, "latest_value_usd": usd}))
+        print(top_n_sells[["name", "cusip", "net_change_usd", "latest_value_usd"]].to_string(index=False, formatters={"net_change_usd": usd, "latest_value_usd": usd}))
 
     # Save CSVs for later use
-    top10_holdings.to_csv(f"{OUTPUT_PREFIX}_top10_holdings.csv", index=False)
-    top10_buys.to_csv(f"{OUTPUT_PREFIX}_top10_buys.csv", index=False)
-    top10_sells.to_csv(f"{OUTPUT_PREFIX}_top10_sells.csv", index=False)
+    top_n_holdings.to_csv(f"{OUTPUT_PREFIX}_top{top_n}_holdings.csv", index=False)
+    top_n_buys.to_csv(f"{OUTPUT_PREFIX}_top{top_n}_buys.csv", index=False)
+    top_n_sells.to_csv(f"{OUTPUT_PREFIX}_top{top_n}_sells.csv", index=False)
     df.to_csv(f"{OUTPUT_PREFIX}_all_aggregated.csv", index=False)
     logging.info("Saved CSV outputs with prefix: %s", OUTPUT_PREFIX)
     logging.info("Done.")
