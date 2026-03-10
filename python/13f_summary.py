@@ -32,6 +32,7 @@ import json
 import gzip
 import shutil
 import logging
+import zipfile
 import requests
 import datetime as dt
 import pandas as pd
@@ -49,6 +50,8 @@ MIN_CHANGE_USD = 1_000_000  # $1M threshold as requested
 TOP_FILERS_N = 50
 INCLUDE_ETFS = False  # user requested exclude ETFs
 OUTPUT_PREFIX = "13f_summary_2026-Q1_2026-01-01_to_2026-03-09"
+LOCAL_ZIP_PATH = None  # Set to a local path of a SEC EDGAR 13F dataset zip to skip live downloads
+                       # Download from: https://www.sec.gov/dera/data/form-13f-data-sets
 
 # ---- END CONFIG ----
 
@@ -270,48 +273,177 @@ def aggregate_holdings_by_security(holdings_list):
             pass
     return agg
 
+def load_holdings_from_zip(zip_path, start_date, end_date):
+    """
+    Load 13F holdings from a SEC EDGAR 13F dataset zip file.
+
+    The SEC DERA quarterly 13F zips (https://www.sec.gov/dera/data/form-13f-data-sets)
+    contain at minimum:
+      - SUBMISSION.tsv  – filing metadata (ACCESSION_NO, FILED, CIK, COMPANYNAME, FORM_TYPE, …)
+      - INFOTABLE.tsv   – per-holding rows (ACCESSION_NO, NAMEOFISSUER, TITLEOFCLASS, CUSIP,
+                          VALUE [thousands USD], SSHPRNAMT, …)
+
+    Returns a filer_holdings defaultdict(list) in the same format used by the HTTP-based path:
+      { "cik|company_name": [{"date": date, "holdings": [{"name":…, "title":…,
+                                "cusip":…, "value":…, "shares":…}]}, …] }
+    """
+    logging.info("Loading 13F data from local zip: %s", zip_path)
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        names = zf.namelist()
+        sub_file = next((n for n in names if n.upper().endswith("SUBMISSION.TSV")), None)
+        info_file = next((n for n in names if n.upper().endswith("INFOTABLE.TSV")), None)
+        if sub_file is None:
+            raise FileNotFoundError(
+                f"SUBMISSION.tsv not found in zip. Files present: {names}"
+            )
+        if info_file is None:
+            raise FileNotFoundError(
+                f"INFOTABLE.tsv not found in zip. Files present: {names}"
+            )
+        logging.info("Reading %s", sub_file)
+        with zf.open(sub_file) as f:
+            sub_df = pd.read_csv(f, sep="\t", dtype=str, low_memory=False)
+        logging.info("Reading %s", info_file)
+        with zf.open(info_file) as f:
+            info_df = pd.read_csv(f, sep="\t", dtype=str, low_memory=False)
+
+    # Normalise column names to upper-case
+    sub_df.columns = [c.strip().upper() for c in sub_df.columns]
+    info_df.columns = [c.strip().upper() for c in info_df.columns]
+
+    # Locate key columns in SUBMISSION (names vary slightly across dataset vintages)
+    def _find_col(df, candidates):
+        for c in candidates:
+            if c in df.columns:
+                return c
+        raise KeyError(f"None of {candidates} found in columns: {list(df.columns)}")
+
+    date_col = _find_col(sub_df, ["FILED", "FILED_DATE", "FILEDATE"])
+    form_col = _find_col(sub_df, ["FORM_TYPE", "FORMTYPE", "TYPE"])
+    cik_col = _find_col(sub_df, ["CIK"])
+    name_col = _find_col(sub_df, ["COMPANYNAME", "COMPANY_NAME", "CONFORMED_NAME"])
+    acc_col_sub = _find_col(sub_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
+
+    # Locate key columns in INFOTABLE
+    acc_col_info = _find_col(info_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
+    issuer_col = _find_col(info_df, ["NAMEOFISSUER", "NAME_OF_ISSUER"])
+    title_col = _find_col(info_df, ["TITLEOFCLASS", "TITLE_OF_CLASS"])
+    cusip_col = _find_col(info_df, ["CUSIP"])
+    value_col = _find_col(info_df, ["VALUE"])
+    shares_col = _find_col(info_df, ["SSHPRNAMT", "SSH_PRNAMT"])
+
+    # Filter SUBMISSION to 13F-HR filings within the date range
+    sub_df[date_col] = pd.to_datetime(sub_df[date_col], errors="coerce")
+    mask = (
+        sub_df[form_col].str.strip().str.upper() == "13F-HR"
+    ) & (
+        sub_df[date_col].dt.date >= start_date
+    ) & (
+        sub_df[date_col].dt.date <= end_date
+    )
+    filtered_sub = sub_df[mask].copy()
+    logging.info(
+        "Found %d 13F-HR filings in zip within date range %s to %s",
+        len(filtered_sub), start_date, end_date,
+    )
+    if filtered_sub.empty:
+        return defaultdict(list)
+
+    # Restrict INFOTABLE to only the matching accession numbers
+    valid_accessions = set(filtered_sub[acc_col_sub].dropna().unique())
+    info_filtered = info_df[info_df[acc_col_info].isin(valid_accessions)].copy()
+
+    # Build filer_holdings in the same shape as the HTTP-based path
+    filer_holdings = defaultdict(list)
+    for _, row in filtered_sub.iterrows():
+        accession = row[acc_col_sub]
+        cik = str(row.get(cik_col, "")).strip()
+        company = str(row.get(name_col, "")).strip()
+        filed_date = row[date_col].date()
+        filer_key = f"{cik}|{company}"
+
+        holding_rows = info_filtered[info_filtered[acc_col_info] == accession]
+        holdings = []
+        for _, hr in holding_rows.iterrows():
+            try:
+                value_str = str(hr.get(value_col, "0") or "0").strip()
+                try:
+                    value = int(re.sub(r"[^\d\-]", "", value_str)) * 1000
+                except Exception:
+                    try:
+                        value = int(float(value_str) * 1000)
+                    except Exception:
+                        value = 0
+                shares_str = str(hr.get(shares_col, "") or "").strip()
+                shares = None
+                if shares_str:
+                    try:
+                        shares = float(re.sub(r"[^\d\.\-]", "", shares_str))
+                    except Exception:
+                        shares = None
+                holdings.append({
+                    "name": str(hr.get(issuer_col, "") or "").strip(),
+                    "title": str(hr.get(title_col, "") or "").strip(),
+                    "cusip": str(hr.get(cusip_col, "") or "").strip(),
+                    "value": value,
+                    "shares": shares,
+                })
+            except Exception as ex:
+                logging.warning("Skipping INFOTABLE row: %s", ex)
+        filer_holdings[filer_key].append({"date": filed_date, "holdings": holdings})
+
+    return filer_holdings
+
+
 def main():
     logging.info("Starting 13F summary process")
-    # For timeframe given, determine relevant quarters (simple approach: Q1 2026)
-    year = 2026
-    qtr = 1
-    master_text = fetch_master_index(year, qtr)
-    filings = parse_master_idx_for_13f(master_text, START_DATE, END_DATE)
-    if not filings:
-        logging.error("No 13F-HR filings found in the master index for the date range")
-        sys.exit(1)
 
-    # For each filing, fetch filing text, locate informationTable XML, fetch/parse holdings
-    # We'll keep per-filer a list of (date_filed, holdings_list)
-    filer_holdings = defaultdict(list)  # key: (cik|company_name) -> list of dicts {date, holdings}
-    for f in filings:
-        try:
-            txt = fetch_filing_txt(f["filename"])
-            xml_block, xml_filename = locate_information_table_xml_from_text(txt, filename_hint=f["filename"])
-            xml_text = None
-            if xml_block:
-                xml_text = xml_block
-            elif xml_filename:
-                # xml_filename might be a relative path or full path; construct full path when relative
-                # Some filenames in master.idx are relative to /Archives/ so prefix is handled
-                if xml_filename.startswith("http"):
-                    xml_path = xml_filename
+    if LOCAL_ZIP_PATH:
+        filer_holdings = load_holdings_from_zip(LOCAL_ZIP_PATH, START_DATE, END_DATE)
+        if not filer_holdings:
+            logging.error("No 13F-HR filings found in zip for the date range")
+            sys.exit(1)
+    else:
+        # For timeframe given, determine relevant quarters (simple approach: Q1 2026)
+        year = 2026
+        qtr = 1
+        master_text = fetch_master_index(year, qtr)
+        filings = parse_master_idx_for_13f(master_text, START_DATE, END_DATE)
+        if not filings:
+            logging.error("No 13F-HR filings found in the master index for the date range")
+            sys.exit(1)
+
+        # For each filing, fetch filing text, locate informationTable XML, fetch/parse holdings
+        # We'll keep per-filer a list of (date_filed, holdings_list)
+        filer_holdings = defaultdict(list)  # key: (cik|company_name) -> list of dicts {date, holdings}
+        for f in filings:
+            try:
+                txt = fetch_filing_txt(f["filename"])
+                xml_block, xml_filename = locate_information_table_xml_from_text(txt, filename_hint=f["filename"])
+                xml_text = None
+                if xml_block:
+                    xml_text = xml_block
+                elif xml_filename:
+                    # xml_filename might be a relative path or full path; construct full path when relative
+                    # Some filenames in master.idx are relative to /Archives/ so prefix is handled
+                    if xml_filename.startswith("http"):
+                        xml_path = xml_filename
+                    else:
+                        # If xml_filename appears incomplete (for example just the file name), try to construct path using filing's directory
+                        # Extract directory from f["filename"]
+                        dirpath = "/".join(f["filename"].split("/")[:-1]) + "/"
+                        xml_path = dirpath + xml_filename
+                    xml_text = fetch_xml_by_path(xml_path)
                 else:
-                    # If xml_filename appears incomplete (for example just the file name), try to construct path using filing's directory
-                    # Extract directory from f["filename"]
-                    dirpath = "/".join(f["filename"].split("/")[:-1]) + "/"
-                    xml_path = dirpath + xml_filename
-                xml_text = fetch_xml_by_path(xml_path)
-            else:
-                logging.warning("Could not find XML informationTable for filing: %s %s", f["company_name"], f["filename"])
-                continue
-            holdings = parse_information_table_xml(xml_text)
-            filer_key = f"{f['cik']}|{f['company_name']}"
-            filer_holdings[filer_key].append({"date": f["date_filed"], "holdings": holdings})
-            # polite pause to avoid hammering SEC
-            time.sleep(0.2)
-        except Exception as e:
-            logging.exception("Error processing filing %s: %s", f.get("filename"), e)
+                    logging.warning("Could not find XML informationTable for filing: %s %s", f["company_name"], f["filename"])
+                    continue
+                holdings = parse_information_table_xml(xml_text)
+                filer_key = f"{f['cik']}|{f['company_name']}"
+                filer_holdings[filer_key].append({"date": f["date_filed"], "holdings": holdings})
+                # polite pause to avoid hammering SEC
+                time.sleep(0.2)
+            except Exception as e:
+                logging.exception("Error processing filing %s: %s", f.get("filename"), e)
 
     # For each filer, we need earliest and latest filing within the timeframe to compute net change.
     # We'll also compute latest total assets (sum of value) for ranking top filers.
