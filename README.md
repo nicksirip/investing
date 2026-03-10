@@ -8,6 +8,7 @@ A collection of investment positioning guides for common macro and geopolitical 
 
 ```
 investing/
+├── python/             # Python scripts for SEC filing analysis
 ├── scenarios/          # Scenario-based investment positioning guides
 └── think-or-swim/      # Custom ThinkScript studies and scan columns
 ```
@@ -34,6 +35,39 @@ Each guide provides a practical framework for adjusting portfolio exposure as a 
 | [us-china-conflict-positioning-guide.md](scenarios/us-china-conflict-positioning-guide.md) | Exposure adjustments as tensions between the United States and China escalate or de-escalate |
 | [us-debt-crisis-positioning-guide.md](scenarios/us-debt-crisis-positioning-guide.md) | Positioning through US sovereign debt stress — from debt ceiling brinkmanship through credit rating downgrade and Treasury market dysfunction |
 | [us-recession-positioning-guide.md](scenarios/us-recession-positioning-guide.md) | Portfolio positioning through the US economic cycle from slowdown through recession and recovery |
+
+---
+
+## Python Scripts
+
+Utility scripts for analyzing SEC filings and institutional holdings data.
+
+| File | Description |
+|------|-------------|
+| [13f_summary.py](python/13f_summary.py) | Parses SEC EDGAR 13F-HR filings to produce ranked tables of the top 50 institutional filers by AUM, top 10 holdings by aggregated market value, and top 10 buys/sells by net dollar change. Supports live EDGAR downloads or local SEC DERA quarterly zip files. Outputs console tables and CSV files. |
+
+**Dependencies:** `requests`, `lxml`, `pandas`, `python-dateutil`
+
+```bash
+pip install requests lxml pandas python-dateutil
+```
+
+**Usage:**
+
+```bash
+# Live EDGAR download (edit USER_AGENT in script with your contact info first)
+python python/13f_summary.py
+
+# Local SEC DERA zip (single quarter)
+python python/13f_summary.py --zip /path/to/current_quarter_form13f.zip
+
+# Two-quarter comparison for buy/sell analysis
+python python/13f_summary.py --prior-zip /path/to/prior_quarter.zip \
+                              --zip       /path/to/current_quarter.zip
+
+# Sample fixtures (included for dev/testing)
+python python/13f_summary.py --zip python/fixtures/sample_13f.zip
+```
 
 ---
 
