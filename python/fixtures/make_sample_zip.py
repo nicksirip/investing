@@ -310,7 +310,8 @@ def _infotable_rows():
     return "\n".join(rows)
 
 
-def build_zip(dest_path: pathlib.Path):
+def build_combined_quarter_zip(dest_path: pathlib.Path):
+    """Build the combined fixture zip (two filing dates per filer, single-zip mode)."""
     submission = _submission_rows()
     infotable  = _infotable_rows()
 
@@ -326,6 +327,65 @@ def build_zip(dest_path: pathlib.Path):
     print(f"  INFOTABLE rows  : {infotable.count(chr(10))}")
 
 
+def _single_quarter_rows(filing_date: str, holdings_key: str):
+    """
+    Generate SUBMISSION and INFOTABLE TSV text for a single-quarter fixture.
+
+    Parameters
+    ----------
+    filing_date  : str   e.g. "15-JAN-2026"
+    holdings_key : str   "early" or "late" – which holdings dict to use
+    """
+    sub_header = "ACCESSION_NUMBER\tFILING_DATE\tSUBMISSIONTYPE\tCIK\tPERIODOFREPORT"
+    info_header = (
+        "ACCESSION_NUMBER\tINFOTABLE_SK\tNAMEOFISSUER\tTITLEOFCLASS"
+        "\tCUSIP\tVALUE\tSSHPRNAMT\tSSHPRNAMTTYPE"
+    )
+    sub_rows  = [sub_header]
+    info_rows = [info_header]
+    for i, f in enumerate(FILERS):
+        acc = f"0001{i:06d}-26-{1 if holdings_key == 'early' else 2:06d}"
+        sub_rows.append(
+            f"{acc}\t{filing_date}\t13F-HR\t{f['cik']}\t{PERIOD_OF_RPT}"
+        )
+        sk = 1
+        for cusip, (value, shares) in f[holdings_key].items():
+            name, title = SECURITIES[cusip]
+            info_rows.append(
+                f"{acc}\t{sk}\t{name}\t{title}\t{cusip}\t{value}\t{shares}\tSH"
+            )
+            sk += 1
+    return "\n".join(sub_rows), "\n".join(info_rows)
+
+
+def build_single_quarter_zip(dest_path: pathlib.Path, filing_date: str, holdings_key: str):
+    """Build a single-quarter fixture zip (one filing per filer) for two-zip mode."""
+    submission, infotable = _single_quarter_rows(filing_date, holdings_key)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("SUBMISSION.tsv", "\ufeff" + submission)
+        zf.writestr("INFOTABLE.tsv",  infotable)
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path.write_bytes(buf.getvalue())
+    print(f"Written {dest_path}  ({dest_path.stat().st_size:,} bytes)")
+    print(f"  SUBMISSION rows : {submission.count(chr(10))}")
+    print(f"  INFOTABLE rows  : {infotable.count(chr(10))}")
+
+
 if __name__ == "__main__":
     script_dir = pathlib.Path(__file__).parent
-    build_zip(script_dir / "sample_13f.zip")
+
+    # Combined fixture (two filing dates per filer) – for single-zip mode
+    build_combined_quarter_zip(script_dir / "sample_13f.zip")
+
+    # Two single-quarter fixtures – for two-zip mode (--prior-zip / --zip)
+    build_single_quarter_zip(
+        script_dir / "sample_13f_prior.zip",
+        EARLY_DATE,
+        "early",
+    )
+    build_single_quarter_zip(
+        script_dir / "sample_13f_current.zip",
+        LATE_DATE,
+        "late",
+    )
