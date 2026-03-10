@@ -307,39 +307,47 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
         with zf.open(info_file) as f:
             info_df = pd.read_csv(f, sep="\t", dtype=str, low_memory=False)
 
-    # Normalise column names to upper-case
-    sub_df.columns = [c.strip().upper() for c in sub_df.columns]
-    info_df.columns = [c.strip().upper() for c in info_df.columns]
+    # Normalise column names to upper-case and strip BOM (UTF-8 BOM \ufeff can
+    # prefix the first column name in government-generated TSV files)
+    sub_df.columns = [c.strip().lstrip('\ufeff').upper() for c in sub_df.columns]
+    info_df.columns = [c.strip().lstrip('\ufeff').upper() for c in info_df.columns]
+    logging.info("SUBMISSION columns: %s", list(sub_df.columns))
+    logging.info("INFOTABLE columns:  %s", list(info_df.columns))
 
     # Locate key columns in SUBMISSION (names vary slightly across dataset vintages)
     def _find_col(df, candidates):
         for c in candidates:
             if c in df.columns:
                 return c
-        raise KeyError(f"None of {candidates} found in columns: {list(df.columns)}")
+        raise KeyError(
+            f"None of {candidates} found in columns: {list(df.columns)}"
+        )
 
-    date_col = _find_col(sub_df, ["FILED", "FILED_DATE", "FILEDATE"])
-    form_col = _find_col(sub_df, ["FORM_TYPE", "FORMTYPE", "TYPE"])
-    cik_col = _find_col(sub_df, ["CIK"])
-    name_col = _find_col(sub_df, ["COMPANYNAME", "COMPANY_NAME", "CONFORMED_NAME"])
-    acc_col_sub = _find_col(sub_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
+    date_col     = _find_col(sub_df, ["FILED", "FILED_DATE", "FILEDATE"])
+    form_col     = _find_col(sub_df, ["FORM_TYPE", "FORMTYPE", "TYPE"])
+    cik_col      = _find_col(sub_df, ["CIK", "CIK_NO", "CIKNUMBER"])
+    name_col     = _find_col(sub_df, ["COMPANYNAME", "COMPANY_NAME", "CONFORMED_NAME", "ENTITY_NAME"])
+    acc_col_sub  = _find_col(sub_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
 
     # Locate key columns in INFOTABLE
     acc_col_info = _find_col(info_df, ["ACCESSION_NO", "ACCESSION_NUMBER", "ACCESSIONNO"])
-    issuer_col = _find_col(info_df, ["NAMEOFISSUER", "NAME_OF_ISSUER"])
-    title_col = _find_col(info_df, ["TITLEOFCLASS", "TITLE_OF_CLASS"])
-    cusip_col = _find_col(info_df, ["CUSIP"])
-    value_col = _find_col(info_df, ["VALUE"])
-    shares_col = _find_col(info_df, ["SSHPRNAMT", "SSH_PRNAMT"])
+    issuer_col   = _find_col(info_df, ["NAMEOFISSUER", "NAME_OF_ISSUER"])
+    title_col    = _find_col(info_df, ["TITLEOFCLASS", "TITLE_OF_CLASS"])
+    cusip_col    = _find_col(info_df, ["CUSIP"])
+    value_col    = _find_col(info_df, ["VALUE"])
+    shares_col   = _find_col(info_df, ["SSHPRNAMT", "SSH_PRNAMT"])
 
-    # Filter SUBMISSION to 13F-HR filings within the date range
+    # Filter SUBMISSION to 13F-HR filings within the date range.
+    # Compare as Timestamps (avoids NaT vs datetime.date TypeError in some pandas versions).
     sub_df[date_col] = pd.to_datetime(sub_df[date_col], errors="coerce")
+    ts_start = pd.Timestamp(start_date)
+    ts_end   = pd.Timestamp(end_date)
     mask = (
         sub_df[form_col].str.strip().str.upper() == "13F-HR"
     ) & (
-        sub_df[date_col].dt.date >= start_date
+        sub_df[date_col] >= ts_start
     ) & (
-        sub_df[date_col].dt.date <= end_date
+        sub_df[date_col] <= ts_end
     )
     filtered_sub = sub_df[mask].copy()
     logging.info(
@@ -349,20 +357,32 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
     if filtered_sub.empty:
         return defaultdict(list)
 
-    # Restrict INFOTABLE to only the matching accession numbers
+    # Restrict INFOTABLE to only the matching accession numbers, then pre-group
+    # by accession so each lookup is O(1) instead of a full-table scan per filing.
     valid_accessions = set(filtered_sub[acc_col_sub].dropna().unique())
     info_filtered = info_df[info_df[acc_col_info].isin(valid_accessions)].copy()
+    info_by_accession = {
+        acc: grp for acc, grp in info_filtered.groupby(acc_col_info, sort=False)
+    }
+    logging.info(
+        "INFOTABLE filtered to %d rows across %d accessions",
+        len(info_filtered), len(info_by_accession),
+    )
 
     # Build filer_holdings in the same shape as the HTTP-based path
     filer_holdings = defaultdict(list)
     for _, row in filtered_sub.iterrows():
-        accession = row[acc_col_sub]
-        cik = str(row.get(cik_col, "")).strip()
-        company = str(row.get(name_col, "")).strip()
+        accession  = row[acc_col_sub]
+        cik        = str(row.get(cik_col, "") or "").strip()
+        company    = str(row.get(name_col, "") or "").strip()
         filed_date = row[date_col].date()
-        filer_key = f"{cik}|{company}"
+        filer_key  = f"{cik}|{company}"
 
-        holding_rows = info_filtered[info_filtered[acc_col_info] == accession]
+        holding_rows = info_by_accession.get(accession)
+        if holding_rows is None or holding_rows.empty:
+            filer_holdings[filer_key].append({"date": filed_date, "holdings": []})
+            continue
+
         holdings = []
         for _, hr in holding_rows.iterrows():
             try:
@@ -382,9 +402,9 @@ def load_holdings_from_zip(zip_path, start_date, end_date):
                     except Exception:
                         shares = None
                 holdings.append({
-                    "name": str(hr.get(issuer_col, "") or "").strip(),
-                    "title": str(hr.get(title_col, "") or "").strip(),
-                    "cusip": str(hr.get(cusip_col, "") or "").strip(),
+                    "name":  str(hr.get(issuer_col, "") or "").strip(),
+                    "title": str(hr.get(title_col,  "") or "").strip(),
+                    "cusip": str(hr.get(cusip_col,  "") or "").strip(),
                     "value": value,
                     "shares": shares,
                 })
