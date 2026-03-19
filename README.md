@@ -23,6 +23,7 @@ Each guide provides a practical framework for adjusting portfolio exposure as a 
 |------|-------------|
 | [ai-bubble-positioning-guide.md](scenarios/ai-bubble-positioning-guide.md) | Portfolio positioning through the inflation and deflation of an AI valuation bubble |
 | [deflation-positioning-guide.md](scenarios/deflation-positioning-guide.md) | Portfolio positioning through a deflationary or Japan-style lost-decade environment of falling prices, near-zero rates, and prolonged balance sheet deleveraging |
+| [fed-rate-hike-positioning-guide.md](scenarios/fed-rate-hike-positioning-guide.md) | Portfolio positioning through a Federal Reserve rate hiking cycle to combat inflation — from initial tightening through peak restrictive policy and eventual pivot |
 | [global-trade-war-positioning-guide.md](scenarios/global-trade-war-positioning-guide.md) | Exposure adjustments as broad tariff escalation across multiple trading partners disrupts global supply chains and fragments the rules-based trading system |
 | [global-world-war-positioning-guide.md](scenarios/global-world-war-positioning-guide.md) | Portfolio positioning through a multi-theater global armed conflict between major world powers — from escalating proxy conflicts through full wartime mobilization and capital preservation |
 | [holding-cash-positioning-guide.md](scenarios/holding-cash-positioning-guide.md) | Tax-efficient framework for parking capital and systematically deploying it as buying opportunities emerge |
