@@ -84,6 +84,7 @@ Custom studies and scan columns for use in the [Thinkorswim](https://www.schwab.
 | [long_down_wick_study.thinkscript](think-or-swim/long_down_wick_study.thinkscript) | Study that highlights candles with long lower wicks (potential reversal signal) |
 | [long_up_wick_study.thinkscript](think-or-swim/long_up_wick_study.thinkscript) | Study that highlights candles with long upper wicks (potential reversal signal) |
 | [obv_trend_col.thinkscript](think-or-swim/obv_trend_col.thinkscript) | Scan column showing the On-Balance Volume (OBV) trend direction |
+| [price_profile_rsi_volume_direction_study.thinkscript](think-or-swim/price_profile_rsi_volume_direction_study.thinkscript) | Study combining rolling volume profile, RSI regime shifts, and relative volume confirmation to identify potential bullish or bearish directional changes |
 | [ray_direction_column.thinkscript](think-or-swim/ray_direction_column.thinkscript) | Scan column showing the current Ray indicator direction |
 | [ray_ma_study.thinkscript](think-or-swim/ray_ma_study.thinkscript) | Study that plots a moving average of the Ray bear/bull power values |
 | [rsi_raybearpower_range.thinkscript](think-or-swim/rsi_raybearpower_range.thinkscript) | Scan combining RSI range filters with Ray bear power thresholds |
