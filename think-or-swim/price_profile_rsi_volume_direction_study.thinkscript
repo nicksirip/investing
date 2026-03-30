@@ -1,0 +1,163 @@
+#hint: Combines rolling volume profile, RSI regime shifts, and relative volume confirmation
+#hint: to identify potential bullish or bearish directional changes.
+
+declare upper;
+
+input profileBars = 50;
+input valueAreaPercent = 70.0;
+input rsiLength = 14;
+input rsiBullThreshold = 55.0;
+input rsiBearThreshold = 45.0;
+input volumeLength = 20;
+input volumeSpikeMultiple = 1.5;
+input peakLookback = 40;
+input peakProximityPercent = 6.0;
+input valleyProximityPercent = 6.0;
+input peakSlowingWindow = 3;
+input volumeMomentumFastLength = 3;
+input volumeMomentumSlowLength = 8;
+input showCloud = yes;
+input showLabels = yes;
+
+# Rolling profile reset every N bars.
+def bn = BarNumber();
+def profileReset = bn % profileBars == 0;
+
+profile vol = VolumeProfile(
+    "startNewProfile" = profileReset,
+    "onExpansion" = no,
+    "numberOfProfiles" = 1,
+    "pricePerRow" = PricePerRow.TICKSIZE,
+    "value area percent" = valueAreaPercent
+);
+
+def pocLevel = vol.GetPointOfControl();
+def vahLevel = vol.GetHighestValueArea();
+def valLevel = vol.GetLowestValueArea();
+
+def rsiVal = RSI(length = rsiLength);
+def avgVol = Average(volume, volumeLength);
+def relVol = if avgVol > 0 then volume / avgVol else 0;
+def volConfirm = relVol >= volumeSpikeMultiple;
+
+def rsiBull = rsiVal > rsiBullThreshold;
+def rsiBear = rsiVal < rsiBearThreshold;
+def rsiBullCross = rsiVal crosses above rsiBullThreshold;
+def rsiBearCross = rsiVal crosses below rsiBearThreshold;
+
+# Relative-peak approach logic:
+# 1) price is near a prior swing high,
+# 2) price has pulled back from its short-term close high (softening),
+# 3) volume momentum is declining.
+def priorPeak = Highest(high[1], peakLookback);
+def distanceToPeakPct = if priorPeak > 0 then AbsValue(priorPeak - close) / priorPeak * 100 else 100;
+def recentCloseHigh = Highest(close[1], peakSlowingWindow);
+def priceSlowing = close < recentCloseHigh;
+def volMomentum = ExpAverage(volume, volumeMomentumFastLength) - ExpAverage(volume, volumeMomentumSlowLength);
+def volumeMomentumDown = volMomentum < volMomentum[1];
+def nearRelativePeak =
+    distanceToPeakPct <= peakProximityPercent and
+    priceSlowing and
+    volumeMomentumDown;
+
+# Relative-valley approach logic:
+# 1) price is near a prior swing low,
+# 2) price has bounced from its short-term close low (softening),
+# 3) volume momentum is declining.
+def priorValley = Lowest(low[1], peakLookback);
+def distanceToValleyPct = if priorValley > 0 then AbsValue(close - priorValley) / priorValley * 100 else 100;
+def recentCloseLow = Lowest(close[1], peakSlowingWindow);
+def downPriceSlowing = close > recentCloseLow;
+def nearRelativeValley =
+    distanceToValleyPct <= valleyProximityPercent and
+    downPriceSlowing and
+    volumeMomentumDown;
+
+# Structure shifts around profile levels.
+def reclaimPOC = close crosses above pocLevel;
+def losePOC = close crosses below pocLevel;
+def acceptAboveVAH = close > vahLevel and close[1] <= vahLevel[1];
+def acceptBelowVAL = close < valLevel and close[1] >= valLevel[1];
+
+def inBalance = close >= valLevel and close <= vahLevel;
+def rangeCompression = inBalance and (vahLevel - valLevel) <= (Average(TrueRange(high, close, low), 14));
+
+# Directional change candidates: profile transition + RSI regime + volume confirmation.
+def bullShift = (reclaimPOC or acceptAboveVAH) and rsiBull and volConfirm;
+def bearShift = (losePOC or acceptBelowVAL) and rsiBear and volConfirm;
+
+# Early-warning flips: RSI threshold cross plus profile-side confirmation.
+def bullEarly = rsiBullCross and close >= pocLevel and relVol >= 1.0;
+def bearEarly = rsiBearCross and close <= pocLevel and relVol >= 1.0;
+
+plot POC = pocLevel;
+plot VAH = vahLevel;
+plot VAL = valLevel;
+
+POC.SetDefaultColor(Color.YELLOW);
+POC.SetLineWeight(2);
+VAH.SetDefaultColor(Color.GREEN);
+VAH.SetStyle(Curve.SHORT_DASH);
+VAL.SetDefaultColor(Color.RED);
+VAL.SetStyle(Curve.SHORT_DASH);
+
+plot BullShiftArrow = bullShift;
+plot BearShiftArrow = bearShift;
+plot BullEarlyArrow = bullEarly and !bullShift;
+plot BearEarlyArrow = bearEarly and !bearShift;
+plot NearPeakFlag = nearRelativePeak;
+plot NearValleyFlag = nearRelativeValley;
+
+BullShiftArrow.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BullShiftArrow.SetDefaultColor(Color.CYAN);
+BullShiftArrow.SetLineWeight(3);
+
+BearShiftArrow.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+BearShiftArrow.SetDefaultColor(Color.MAGENTA);
+BearShiftArrow.SetLineWeight(3);
+
+BullEarlyArrow.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_UP);
+BullEarlyArrow.SetDefaultColor(Color.GREEN);
+
+BearEarlyArrow.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_DOWN);
+BearEarlyArrow.SetDefaultColor(Color.RED);
+
+NearPeakFlag.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
+NearPeakFlag.SetDefaultColor(Color.ORANGE);
+NearPeakFlag.SetLineWeight(4);
+
+NearValleyFlag.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
+NearValleyFlag.SetDefaultColor(Color.LIGHT_GREEN);
+NearValleyFlag.SetLineWeight(4);
+
+AddCloud(
+    if showCloud and rangeCompression then vahLevel else Double.NaN,
+    if showCloud and rangeCompression then valLevel else Double.NaN,
+    Color.DARK_GRAY,
+    Color.DARK_GRAY
+);
+
+AddLabel(showLabels, "RSI: " + Round(rsiVal, 1), if rsiBull then Color.RED else if rsiBear then Color.GREEN else Color.GRAY);
+AddLabel(showLabels, "RelVol: " + Round(relVol, 2) + "x", if volConfirm then Color.CYAN else Color.GRAY);
+AddLabel(showLabels, "PV Status: " +
+    (if nearRelativePeak and nearRelativeValley then "PEAK+VALLEY" else
+     if nearRelativePeak then "NEAR PEAK (" + Round(distanceToPeakPct, 2) + "%)" else
+     if nearRelativeValley then "NEAR VALLEY (" + Round(distanceToValleyPct, 2) + "%)" else
+     "NONE"),
+    if nearRelativePeak and nearRelativeValley then Color.YELLOW else
+    if nearRelativePeak then Color.ORANGE else
+    if nearRelativeValley then Color.LIGHT_GREEN else
+    Color.GRAY);
+AddLabel(showLabels, "Profile Bias: " +
+    (if close > vahLevel then "Breakout Up" else if close < valLevel then "Breakout Down" else if close > pocLevel then "Above POC" else if close < pocLevel then "Below POC" else "At POC"),
+    if close > vahLevel then Color.GREEN else if close < valLevel then Color.RED else Color.YELLOW);
+
+BullShiftArrow.HideBubble();
+BearShiftArrow.HideBubble();
+BullEarlyArrow.HideBubble();
+BearEarlyArrow.HideBubble();
+NearPeakFlag.HideBubble();
+NearValleyFlag.HideBubble();
+POC.HideBubble();
+VAH.HideBubble();
+VAL.HideBubble();
