@@ -1,0 +1,13 @@
+input rsiLength = 14;
+input overbought = 70.0;
+input oversold = 30.0;
+
+def rsiVal = RSI(length = rsiLength);
+
+plot data = rsiVal;
+
+data.AssignValueColor(
+    if rsiVal >= overbought then Color.RED
+    else if rsiVal <= oversold then Color.GREEN
+    else Color.CURRENT
+);

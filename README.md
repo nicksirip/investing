@@ -87,6 +87,7 @@ Custom studies and scan columns for use in the [Thinkorswim](https://www.schwab.
 | [price_profile_rsi_volume_direction_study.thinkscript](think-or-swim/price_profile_rsi_volume_direction_study.thinkscript) | Study combining rolling volume profile, RSI regime shifts, and relative volume confirmation to identify potential bullish or bearish directional changes |
 | [ray_direction_column.thinkscript](think-or-swim/ray_direction_column.thinkscript) | Scan column showing the current Ray indicator direction |
 | [ray_ma_study.thinkscript](think-or-swim/ray_ma_study.thinkscript) | Study that plots a moving average of the Ray bear/bull power values |
+| [rsi_col.thinkscript](think-or-swim/rsi_col.thinkscript) | Watchlist column displaying the current RSI value with red text when overbought (≥ 70) and green text when oversold (≤ 30) |
 | [rsi_raybearpower_range.thinkscript](think-or-swim/rsi_raybearpower_range.thinkscript) | Scan combining RSI range filters with Ray bear power thresholds |
 | [trade_hunter_study.thinkscript](think-or-swim/trade_hunter_study.thinkscript) | Composite study that signals potential buy/sell entries using Ray bear power crossovers, moving average crossovers, and moving average directional changes |
 | [volume_spike_col.thinkscript](think-or-swim/volume_spike_col.thinkscript) | Scan column that flags abnormal volume spikes relative to a historical average |
