@@ -1,6 +1,6 @@
 input rsiLength = 14;
-input overbought = 70.0;
-input oversold = 30.0;
+input overbought = 65.0;
+input oversold = 35.0;
 
 def rsiVal = RSI(length = rsiLength);
 
