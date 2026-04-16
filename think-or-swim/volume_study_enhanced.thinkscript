@@ -1,0 +1,49 @@
+# Author: nicksirip
+# Description: Enhanced volume study that plots a volume histogram and volume average.
+# Volume bars are colored by selected price basis direction:
+# green when rising, red when falling, white when unchanged.
+# Supported price bases: Close, Open, High, Low, HL2, HLC3, OHLC4.
+
+declare on_volume;
+declare zerobase;
+
+input length = 50;
+input priceColorBasis = {default Close, Open, High, Low, HL2, HLC3, OHLC4};
+
+# Select which price source controls volume bar direction coloring.
+def basisPrice;
+switch (priceColorBasis) {
+case Close:
+	basisPrice = close;
+case Open:
+	basisPrice = open;
+case High:
+	basisPrice = high;
+case Low:
+	basisPrice = low;
+case HL2:
+	basisPrice = (high + low) / 2;
+case HLC3:
+	basisPrice = (high + low + close) / 3;
+case OHLC4:
+	basisPrice = (open + high + low + close) / 4;
+}
+
+def basisDelta = basisPrice - basisPrice[1];
+
+plot Vol = volume;
+plot VolAvg = Average(volume, length);
+
+Vol.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+Vol.SetLineWeight(3);
+# Use explicit RGB colors for consistent rendering across chart themes.
+Vol.DefineColor("Neutral", CreateColor(255, 255, 255));
+Vol.DefineColor("Up", CreateColor(0, 255, 0));
+Vol.DefineColor("Down", CreateColor(255, 0, 0));
+Vol.SetDefaultColor(Vol.Color("Neutral"));
+Vol.AssignValueColor(
+	if basisDelta > 0 then Vol.color("Up")
+	else if basisDelta < 0 then Vol.color("Down")
+	else Vol.Color("Neutral")
+);
+VolAvg.SetDefaultColor(Vol.Color("Neutral"));
