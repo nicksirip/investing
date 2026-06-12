@@ -1,0 +1,118 @@
+# GoNoGo Indicator
+# Paints price bars with color-coded trend strength and direction.
+# Green shades = Go (bullish), Red/Pink shades = NoGo (bearish), Amber = neutral.
+#
+# Eight binary factors each vote +1 (bullish) or -1 (bearish):
+#   1. Close above fast EMA
+#   2. Fast EMA above medium EMA
+#   3. Medium EMA above slow EMA
+#   4. Rate of Change positive
+#   5. Volume above its moving average
+#   6. RSI above 50
+#   7. MACD histogram positive
+#   8. CCI positive
+#
+# Composite score ranges from -8 to +8 in steps of 2.
+
+input fastLength = 10;
+input mediumLength = 20;
+input slowLength = 50;
+input rocLength = 14;
+input volumeLength = 20;
+input rsiLength = 14;
+input macdFastLength = 12;
+input macdSlowLength = 26;
+input macdSignalLength = 9;
+input cciLength = 14;
+
+# Factor 1: Close above fast EMA
+def fastEMA = ExpAverage(close, fastLength);
+def f1 = if close > fastEMA then 1 else -1;
+
+# Factor 2: Fast EMA above medium EMA
+def mediumEMA = ExpAverage(close, mediumLength);
+def f2 = if fastEMA > mediumEMA then 1 else -1;
+
+# Factor 3: Medium EMA above slow EMA
+def slowEMA = ExpAverage(close, slowLength);
+def f3 = if mediumEMA > slowEMA then 1 else -1;
+
+# Factor 4: Rate of Change positive
+def roc = (close - close[rocLength]) / close[rocLength] * 100;
+def f4 = if roc > 0 then 1 else -1;
+
+# Factor 5: Volume above its moving average
+def volMA = Average(volume, volumeLength);
+def f5 = if volume > volMA then 1 else -1;
+
+# Factor 6: RSI above 50
+def rsiVal = RSI(length = rsiLength);
+def f6 = if rsiVal > 50 then 1 else -1;
+
+# Factor 7: MACD histogram positive
+def macdHist = MACD(fastLength = macdFastLength, slowLength = macdSlowLength, MACDLength = macdSignalLength).Histogram;
+def f7 = if macdHist > 0 then 1 else -1;
+
+# Factor 8: CCI positive
+def cciVal = CCI(length = cciLength);
+def f8 = if cciVal > 0 then 1 else -1;
+
+# Composite score: -8 (strongest NoGo) to +8 (strongest Go), even steps of 2
+def score = f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
+
+# Paint price bars according to score
+DefineGlobalColor("StrongGo",   CreateColor(0, 180, 0));
+DefineGlobalColor("Go",         CreateColor(0, 230, 0));
+DefineGlobalColor("WeakGo",     CreateColor(144, 238, 144));
+DefineGlobalColor("BarelyGo",   Color.CYAN);
+DefineGlobalColor("Neutral",    CreateColor(255, 191, 0));
+DefineGlobalColor("BarelyNoGo", CreateColor(255, 182, 193));
+DefineGlobalColor("WeakNoGo",   CreateColor(255, 105, 105));
+DefineGlobalColor("NoGo",       CreateColor(220, 30, 30));
+DefineGlobalColor("StrongNoGo", CreateColor(139, 0, 0));
+
+AssignPriceColor(
+    if score == 8  then GlobalColor("StrongGo")
+    else if score == 6  then GlobalColor("Go")
+    else if score == 4  then GlobalColor("WeakGo")
+    else if score == 2  then GlobalColor("BarelyGo")
+    else if score == 0  then GlobalColor("Neutral")
+    else if score == -2 then GlobalColor("BarelyNoGo")
+    else if score == -4 then GlobalColor("WeakNoGo")
+    else if score == -6 then GlobalColor("NoGo")
+    else GlobalColor("StrongNoGo")
+);
+
+# Lower subgraph: histogram of the composite score
+plot GoNoGoScore = score;
+
+GoNoGoScore.DefineColor("StrongGo",   CreateColor(0, 180, 0));
+GoNoGoScore.DefineColor("Go",         CreateColor(0, 230, 0));
+GoNoGoScore.DefineColor("WeakGo",     CreateColor(144, 238, 144));
+GoNoGoScore.DefineColor("BarelyGo",   Color.CYAN);
+GoNoGoScore.DefineColor("Neutral",    CreateColor(255, 191, 0));
+GoNoGoScore.DefineColor("BarelyNoGo", CreateColor(255, 182, 193));
+GoNoGoScore.DefineColor("WeakNoGo",   CreateColor(255, 105, 105));
+GoNoGoScore.DefineColor("NoGo",       CreateColor(220, 30, 30));
+GoNoGoScore.DefineColor("StrongNoGo", CreateColor(139, 0, 0));
+
+GoNoGoScore.AssignValueColor(
+    if score == 8  then GoNoGoScore.color("StrongGo")
+    else if score == 6  then GoNoGoScore.color("Go")
+    else if score == 4  then GoNoGoScore.color("WeakGo")
+    else if score == 2  then GoNoGoScore.color("BarelyGo")
+    else if score == 0  then GoNoGoScore.color("Neutral")
+    else if score == -2 then GoNoGoScore.color("BarelyNoGo")
+    else if score == -4 then GoNoGoScore.color("WeakNoGo")
+    else if score == -6 then GoNoGoScore.color("NoGo")
+    else GoNoGoScore.color("StrongNoGo")
+);
+
+GoNoGoScore.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+GoNoGoScore.SetLineWeight(3);
+
+# Zero reference line
+plot ZeroLine = 0;
+ZeroLine.SetDefaultColor(Color.GRAY);
+ZeroLine.SetLineWeight(1);
+ZeroLine.HideBubble();
