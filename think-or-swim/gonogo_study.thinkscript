@@ -86,26 +86,16 @@ AssignPriceColor(
 # Lower subgraph: histogram of the composite score
 plot GoNoGoScore = score;
 
-GoNoGoScore.DefineColor("StrongGo",   CreateColor(0, 180, 0));
-GoNoGoScore.DefineColor("Go",         CreateColor(0, 230, 0));
-GoNoGoScore.DefineColor("WeakGo",     CreateColor(144, 238, 144));
-GoNoGoScore.DefineColor("BarelyGo",   Color.CYAN);
-GoNoGoScore.DefineColor("Neutral",    CreateColor(255, 191, 0));
-GoNoGoScore.DefineColor("BarelyNoGo", CreateColor(255, 182, 193));
-GoNoGoScore.DefineColor("WeakNoGo",   CreateColor(255, 105, 105));
-GoNoGoScore.DefineColor("NoGo",       CreateColor(220, 30, 30));
-GoNoGoScore.DefineColor("StrongNoGo", CreateColor(139, 0, 0));
-
 GoNoGoScore.AssignValueColor(
-    if score == 8  then GoNoGoScore.color("StrongGo")
-    else if score == 6  then GoNoGoScore.color("Go")
-    else if score == 4  then GoNoGoScore.color("WeakGo")
-    else if score == 2  then GoNoGoScore.color("BarelyGo")
-    else if score == 0  then GoNoGoScore.color("Neutral")
-    else if score == -2 then GoNoGoScore.color("BarelyNoGo")
-    else if score == -4 then GoNoGoScore.color("WeakNoGo")
-    else if score == -6 then GoNoGoScore.color("NoGo")
-    else GoNoGoScore.color("StrongNoGo")
+    if score == 8  then GlobalColor("StrongGo")
+    else if score == 6  then GlobalColor("Go")
+    else if score == 4  then GlobalColor("WeakGo")
+    else if score == 2  then GlobalColor("BarelyGo")
+    else if score == 0  then GlobalColor("Neutral")
+    else if score == -2 then GlobalColor("BarelyNoGo")
+    else if score == -4 then GlobalColor("WeakNoGo")
+    else if score == -6 then GlobalColor("NoGo")
+    else GlobalColor("StrongNoGo")
 );
 
 GoNoGoScore.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
