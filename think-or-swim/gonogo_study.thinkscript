@@ -1,0 +1,154 @@
+# GoNoGo Indicator
+# Paints price bars with color-coded trend strength and direction.
+# Matches the GoNoGo Trend(R) color convention:
+#   Bright Blue  = strongest bullish Go
+#   Aqua         = weakening bullish Go
+#   Amber        = neutral / uncertainty
+#   Pink         = lower-intensity bearish NoGo
+#   Purple       = intensifying bearish NoGo
+#
+# Transition markers appear on the price pane and score histogram:
+#   Blue up arrow   = bull transition (score crosses above 0)
+#   Purple down arrow = bear transition (score crosses below 0)
+#
+# Eight binary factors each vote +1 (bullish) or -1 (bearish):
+#   1. Close above fast EMA
+#   2. Fast EMA above medium EMA
+#   3. Medium EMA above slow EMA
+#   4. Rate of Change positive
+#   5. Volume above its moving average
+#   6. RSI above 50
+#   7. MACD histogram positive
+#   8. CCI positive
+#
+# Composite score ranges from -8 to +8 in steps of 2.
+
+input fastLength = 10;
+input mediumLength = 20;
+input slowLength = 50;
+input rocLength = 14;
+input volumeLength = 20;
+input rsiLength = 14;
+input macdFastLength = 12;
+input macdSlowLength = 26;
+input macdSignalLength = 9;
+input cciLength = 14;
+
+# Factor 1: Close above fast EMA
+def fastEMA = ExpAverage(close, fastLength);
+def f1 = if close > fastEMA then 1 else -1;
+
+# Factor 2: Fast EMA above medium EMA
+def mediumEMA = ExpAverage(close, mediumLength);
+def f2 = if fastEMA > mediumEMA then 1 else -1;
+
+# Factor 3: Medium EMA above slow EMA
+def slowEMA = ExpAverage(close, slowLength);
+def f3 = if mediumEMA > slowEMA then 1 else -1;
+
+# Factor 4: Rate of Change positive
+def roc = (close - close[rocLength]) / close[rocLength] * 100;
+def f4 = if roc > 0 then 1 else -1;
+
+# Factor 5: Volume above its moving average
+def volMA = Average(volume, volumeLength);
+def f5 = if volume > volMA then 1 else -1;
+
+# Factor 6: RSI above 50
+def rsiVal = RSI(length = rsiLength);
+def f6 = if rsiVal > 50 then 1 else -1;
+
+# Factor 7: MACD histogram positive
+def macdHist = MACD(fastLength = macdFastLength, slowLength = macdSlowLength, MACDLength = macdSignalLength).Diff;
+def f7 = if macdHist > 0 then 1 else -1;
+
+# Factor 8: CCI positive
+def cciVal = CCI(length = cciLength);
+def f8 = if cciVal > 0 then 1 else -1;
+
+# Composite score: -8 (strongest NoGo) to +8 (strongest Go), even steps of 2
+def score = f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
+
+# GoNoGo Trend(R) color palette
+# Bullish: bright blue (strongest) -> aqua (weakening)
+# Neutral: amber
+# Bearish: pink (weaker) -> purple (stronger)
+DefineGlobalColor("StrongGo",   CreateColor(0, 150, 255));   # bright blue
+DefineGlobalColor("Go",         CreateColor(0, 100, 220));   # blue
+DefineGlobalColor("WeakGo",     CreateColor(0, 200, 200));   # aqua
+DefineGlobalColor("BarelyGo",   CreateColor(100, 215, 215)); # light aqua
+DefineGlobalColor("Neutral",    CreateColor(255, 191, 0));   # amber
+DefineGlobalColor("BarelyNoGo", CreateColor(255, 182, 193)); # light pink
+DefineGlobalColor("WeakNoGo",   CreateColor(255, 105, 180)); # pink
+DefineGlobalColor("NoGo",       CreateColor(148, 0, 211));   # purple
+DefineGlobalColor("StrongNoGo", CreateColor(75, 0, 130));    # dark purple
+
+AssignPriceColor(
+    if score == 8  then GlobalColor("StrongGo")
+    else if score == 6  then GlobalColor("Go")
+    else if score == 4  then GlobalColor("WeakGo")
+    else if score == 2  then GlobalColor("BarelyGo")
+    else if score == 0  then GlobalColor("Neutral")
+    else if score == -2 then GlobalColor("BarelyNoGo")
+    else if score == -4 then GlobalColor("WeakNoGo")
+    else if score == -6 then GlobalColor("NoGo")
+    else GlobalColor("StrongNoGo")
+);
+
+# ── Trend transition detection ───────────────────────────────────────────────
+# Bull transition: score crosses from non-positive to positive
+def bullTransition = score > 0 and score[1] <= 0;
+# Bear transition: score crosses from non-negative to negative
+def bearTransition = score < 0 and score[1] >= 0;
+
+# Price-pane transition arrows
+plot GoBullArrow   = if bullTransition then low  * 0.999 else Double.NaN;
+plot NoBearArrow   = if bearTransition then high * 1.001 else Double.NaN;
+
+GoBullArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+GoBullArrow.SetDefaultColor(CreateColor(0, 150, 255));  # bright blue
+GoBullArrow.SetLineWeight(5);
+GoBullArrow.HideBubble();
+
+NoBearArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+NoBearArrow.SetDefaultColor(CreateColor(148, 0, 211));  # purple
+NoBearArrow.SetLineWeight(5);
+NoBearArrow.HideBubble();
+
+# ── Lower subgraph: histogram of the composite score ─────────────────────────
+plot GoNoGoScore = score;
+
+GoNoGoScore.AssignValueColor(
+    if score == 8  then GlobalColor("StrongGo")
+    else if score == 6  then GlobalColor("Go")
+    else if score == 4  then GlobalColor("WeakGo")
+    else if score == 2  then GlobalColor("BarelyGo")
+    else if score == 0  then GlobalColor("Neutral")
+    else if score == -2 then GlobalColor("BarelyNoGo")
+    else if score == -4 then GlobalColor("WeakNoGo")
+    else if score == -6 then GlobalColor("NoGo")
+    else GlobalColor("StrongNoGo")
+);
+
+GoNoGoScore.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+GoNoGoScore.SetLineWeight(3);
+
+# Transition arrows mirrored in the score subgraph
+plot GoBullScoreArrow = if bullTransition then -8 else Double.NaN;
+plot NoBearScoreArrow = if bearTransition then  8 else Double.NaN;
+
+GoBullScoreArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+GoBullScoreArrow.SetDefaultColor(CreateColor(0, 150, 255));
+GoBullScoreArrow.SetLineWeight(4);
+GoBullScoreArrow.HideBubble();
+
+NoBearScoreArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+NoBearScoreArrow.SetDefaultColor(CreateColor(148, 0, 211));
+NoBearScoreArrow.SetLineWeight(4);
+NoBearScoreArrow.HideBubble();
+
+# Zero reference line
+plot ZeroLine = 0;
+ZeroLine.SetDefaultColor(Color.GRAY);
+ZeroLine.SetLineWeight(1);
+ZeroLine.HideBubble();
