@@ -1,0 +1,74 @@
+# Supertrend Indicator
+# Plots a dynamic support/resistance line that flips between green (uptrend)
+# and red (downtrend) based on price relative to an ATR-derived band.
+#
+# Uptrend band   (green line):  (High + Low) / 2 - (Multiplier × ATR)
+# Downtrend band (red line):    (High + Low) / 2 + (Multiplier × ATR)
+#
+# Signals:
+#   Green up-arrow   = price crossed above Supertrend → bullish flip
+#   Red down-arrow   = price crossed below Supertrend → bearish flip
+#
+# Recommended pairings to reduce whipsaws: RSI or MACD confirmation.
+
+input atrLength        = 10;
+input multiplier       = 3.0;
+input paintBars        = yes;
+input arrowOffsetPct   = 0.001;   # fraction of price to offset signal arrows from bar
+
+# ── ATR & mid-point ──────────────────────────────────────────────────────────
+def ATR       = Average(TrueRange(high, close, low), atrLength);
+def hl2       = (high + low) / 2;
+
+# ── Basic bands ──────────────────────────────────────────────────────────────
+def basicUpper = hl2 + multiplier * ATR;
+def basicLower = hl2 - multiplier * ATR;
+
+# ── Final bands (self-referencing to lock in the trailing level) ──────────────
+# Upper band only tightens downward (or resets when price breaks above it)
+def finalUpper = if basicUpper < finalUpper[1] or close[1] > finalUpper[1]
+                 then basicUpper
+                 else finalUpper[1];
+
+# Lower band only tightens upward (or resets when price breaks below it)
+def finalLower = if basicLower > finalLower[1] or close[1] < finalLower[1]
+                 then basicLower
+                 else finalLower[1];
+
+# ── Supertrend direction ──────────────────────────────────────────────────────
+def superTrend;
+if superTrend[1] == finalUpper[1] {
+    # Was in downtrend – stay there unless price closes above upper band
+    superTrend = if close > finalUpper then finalLower else finalUpper;
+} else {
+    # Was in uptrend – stay there unless price closes below lower band
+    superTrend = if close < finalLower then finalUpper else finalLower;
+}
+
+def isUpTrend = superTrend == finalLower;
+
+# ── Supertrend line ───────────────────────────────────────────────────────────
+plot SupertrendLine = superTrend;
+SupertrendLine.AssignValueColor(if isUpTrend then Color.GREEN else Color.RED);
+SupertrendLine.SetLineWeight(2);
+SupertrendLine.SetPaintingStrategy(PaintingStrategy.LINE);
+SupertrendLine.HideBubble();
+
+# ── Signal arrows ─────────────────────────────────────────────────────────────
+plot BuySignal  = if isUpTrend and !isUpTrend[1]  then low  * (1 - arrowOffsetPct) else Double.NaN;
+plot SellSignal = if !isUpTrend and isUpTrend[1]  then high * (1 + arrowOffsetPct) else Double.NaN;
+
+BuySignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+BuySignal.SetDefaultColor(Color.GREEN);
+BuySignal.SetLineWeight(5);
+BuySignal.HideBubble();
+
+SellSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+SellSignal.SetDefaultColor(Color.RED);
+SellSignal.SetLineWeight(5);
+SellSignal.HideBubble();
+
+# ── Optional bar coloring ─────────────────────────────────────────────────────
+AssignPriceColor(if !paintBars      then Color.CURRENT
+                 else if isUpTrend  then Color.GREEN
+                 else                    Color.RED);
