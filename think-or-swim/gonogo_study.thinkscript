@@ -7,6 +7,10 @@
 #   Pink         = lower-intensity bearish NoGo
 #   Purple       = intensifying bearish NoGo
 #
+# Transition markers appear on the price pane and score histogram:
+#   Blue up arrow   = bull transition (score crosses above 0)
+#   Purple down arrow = bear transition (score crosses below 0)
+#
 # Eight binary factors each vote +1 (bullish) or -1 (bearish):
 #   1. Close above fast EMA
 #   2. Fast EMA above medium EMA
@@ -91,7 +95,27 @@ AssignPriceColor(
     else GlobalColor("StrongNoGo")
 );
 
-# Lower subgraph: histogram of the composite score
+# ── Trend transition detection ───────────────────────────────────────────────
+# Bull transition: score crosses from non-positive to positive
+def bullTransition = score > 0 and score[1] <= 0;
+# Bear transition: score crosses from non-negative to negative
+def bearTransition = score < 0 and score[1] >= 0;
+
+# Price-pane transition arrows
+plot GoBullArrow   = if bullTransition then low  * 0.999 else Double.NaN;
+plot NoBearArrow   = if bearTransition then high * 1.001 else Double.NaN;
+
+GoBullArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+GoBullArrow.SetDefaultColor(CreateColor(0, 150, 255));  # bright blue
+GoBullArrow.SetLineWeight(5);
+GoBullArrow.HideBubble();
+
+NoBearArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+NoBearArrow.SetDefaultColor(CreateColor(148, 0, 211));  # purple
+NoBearArrow.SetLineWeight(5);
+NoBearArrow.HideBubble();
+
+# ── Lower subgraph: histogram of the composite score ─────────────────────────
 plot GoNoGoScore = score;
 
 GoNoGoScore.AssignValueColor(
@@ -108,6 +132,20 @@ GoNoGoScore.AssignValueColor(
 
 GoNoGoScore.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
 GoNoGoScore.SetLineWeight(3);
+
+# Transition arrows mirrored in the score subgraph
+plot GoBullScoreArrow = if bullTransition then -8 else Double.NaN;
+plot NoBearScoreArrow = if bearTransition then  8 else Double.NaN;
+
+GoBullScoreArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+GoBullScoreArrow.SetDefaultColor(CreateColor(0, 150, 255));
+GoBullScoreArrow.SetLineWeight(4);
+GoBullScoreArrow.HideBubble();
+
+NoBearScoreArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+NoBearScoreArrow.SetDefaultColor(CreateColor(148, 0, 211));
+NoBearScoreArrow.SetLineWeight(4);
+NoBearScoreArrow.HideBubble();
 
 # Zero reference line
 plot ZeroLine = 0;
