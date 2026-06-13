@@ -50,7 +50,7 @@ def isUpTrend = superTrend == finalLower;
 # ── Supertrend line ───────────────────────────────────────────────────────────
 plot SupertrendLine = superTrend;
 SupertrendLine.AssignValueColor(if isUpTrend then Color.GREEN else Color.RED);
-SupertrendLine.SetLineWeight(2);
+SupertrendLine.SetLineWeight(1);
 SupertrendLine.SetPaintingStrategy(PaintingStrategy.LINE);
 SupertrendLine.HideBubble();
 
@@ -60,12 +60,12 @@ plot SellSignal = if !isUpTrend and isUpTrend[1]  then high * (1 + arrowOffsetPc
 
 BuySignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
 BuySignal.SetDefaultColor(Color.GREEN);
-BuySignal.SetLineWeight(5);
+BuySignal.SetLineWeight(2);
 BuySignal.HideBubble();
 
 SellSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
 SellSignal.SetDefaultColor(Color.RED);
-SellSignal.SetLineWeight(5);
+SellSignal.SetLineWeight(2);
 SellSignal.HideBubble();
 
 # ── Optional bar coloring ─────────────────────────────────────────────────────
