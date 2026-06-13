@@ -83,6 +83,7 @@ Custom studies and scan columns for use in the [Thinkorswim](https://www.schwab.
 
 | File | Description |
 |------|-------------|
+| [gonogo_study.thinkscript](think-or-swim/gonogo_study.thinkscript) | GoNoGo Trend® study that paints price bars in the official color convention (bright blue / aqua = bullish Go, amber = neutral, pink / purple = bearish NoGo) based on eight binary trend factors (EMAs, ROC, volume, RSI, MACD, CCI); includes bull and bear transition arrow markers on the price pane and score histogram |
 | [bid_ask_separation_col.thinkscript](think-or-swim/bid_ask_separation_col.thinkscript) | Scan column showing the bid/ask spread as a measure of liquidity |
 | [long_down_wick_study.thinkscript](think-or-swim/long_down_wick_study.thinkscript) | Study that highlights candles with long lower wicks (potential reversal signal) |
 | [long_up_wick_study.thinkscript](think-or-swim/long_up_wick_study.thinkscript) | Study that highlights candles with long upper wicks (potential reversal signal) |
