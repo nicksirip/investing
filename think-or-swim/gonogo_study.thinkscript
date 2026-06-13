@@ -1,6 +1,11 @@
 # GoNoGo Indicator
 # Paints price bars with color-coded trend strength and direction.
-# Green shades = Go (bullish), Red/Pink shades = NoGo (bearish), Amber = neutral.
+# Matches the GoNoGo Trend(R) color convention:
+#   Bright Blue  = strongest bullish Go
+#   Aqua         = weakening bullish Go
+#   Amber        = neutral / uncertainty
+#   Pink         = lower-intensity bearish NoGo
+#   Purple       = intensifying bearish NoGo
 #
 # Eight binary factors each vote +1 (bullish) or -1 (bearish):
 #   1. Close above fast EMA
@@ -60,16 +65,19 @@ def f8 = if cciVal > 0 then 1 else -1;
 # Composite score: -8 (strongest NoGo) to +8 (strongest Go), even steps of 2
 def score = f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
 
-# Paint price bars according to score
-DefineGlobalColor("StrongGo",   CreateColor(0, 180, 0));
-DefineGlobalColor("Go",         CreateColor(0, 230, 0));
-DefineGlobalColor("WeakGo",     CreateColor(144, 238, 144));
-DefineGlobalColor("BarelyGo",   Color.CYAN);
-DefineGlobalColor("Neutral",    CreateColor(255, 191, 0));
-DefineGlobalColor("BarelyNoGo", CreateColor(255, 182, 193));
-DefineGlobalColor("WeakNoGo",   CreateColor(255, 105, 105));
-DefineGlobalColor("NoGo",       CreateColor(220, 30, 30));
-DefineGlobalColor("StrongNoGo", CreateColor(139, 0, 0));
+# GoNoGo Trend(R) color palette
+# Bullish: bright blue (strongest) -> aqua (weakening)
+# Neutral: amber
+# Bearish: pink (weaker) -> purple (stronger)
+DefineGlobalColor("StrongGo",   CreateColor(0, 150, 255));   # bright blue
+DefineGlobalColor("Go",         CreateColor(0, 100, 220));   # blue
+DefineGlobalColor("WeakGo",     CreateColor(0, 200, 200));   # aqua
+DefineGlobalColor("BarelyGo",   CreateColor(100, 215, 215)); # light aqua
+DefineGlobalColor("Neutral",    CreateColor(255, 191, 0));   # amber
+DefineGlobalColor("BarelyNoGo", CreateColor(255, 182, 193)); # light pink
+DefineGlobalColor("WeakNoGo",   CreateColor(255, 105, 180)); # pink
+DefineGlobalColor("NoGo",       CreateColor(148, 0, 211));   # purple
+DefineGlobalColor("StrongNoGo", CreateColor(75, 0, 130));    # dark purple
 
 AssignPriceColor(
     if score == 8  then GlobalColor("StrongGo")
