@@ -50,7 +50,7 @@ def rsiVal = RSI(length = rsiLength);
 def f6 = if rsiVal > 50 then 1 else -1;
 
 # Factor 7: MACD histogram positive
-def macdHist = MACD(fastLength = macdFastLength, slowLength = macdSlowLength, MACDLength = macdSignalLength).Histogram;
+def macdHist = MACD(fastLength = macdFastLength, slowLength = macdSlowLength, MACDLength = macdSignalLength).Diff;
 def f7 = if macdHist > 0 then 1 else -1;
 
 # Factor 8: CCI positive
