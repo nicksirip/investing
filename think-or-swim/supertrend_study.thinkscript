@@ -13,7 +13,7 @@
 
 input atrLength        = 10;
 input multiplier       = 3.0;
-input paintBars        = yes;
+input paintBars        = no;
 input arrowOffsetPct   = 0.001;   # fraction of price to offset signal arrows from bar
 
 # ── ATR & mid-point ──────────────────────────────────────────────────────────
