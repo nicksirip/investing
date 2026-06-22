@@ -1,0 +1,49 @@
+# GoNoGo Scan
+# Scan based on the GoNoGo composite score model from gonogo_study.thinkscript.
+# Score ranges from -8 to +8.
+
+input fastLength = 10;
+input mediumLength = 20;
+input slowLength = 50;
+input rocLength = 14;
+input volumeLength = 20;
+input rsiLength = 14;
+input macdFastLength = 12;
+input macdSlowLength = 26;
+input macdSignalLength = 9;
+input cciLength = 14;
+
+input threshold = 4;
+input scanDirection = {default Go, NoGo};
+
+def fastEMA = ExpAverage(close, fastLength);
+def f1 = if close > fastEMA then 1 else -1;
+
+def mediumEMA = ExpAverage(close, mediumLength);
+def f2 = if fastEMA > mediumEMA then 1 else -1;
+
+def slowEMA = ExpAverage(close, slowLength);
+def f3 = if mediumEMA > slowEMA then 1 else -1;
+
+def roc = (close - close[rocLength]) / close[rocLength] * 100;
+def f4 = if roc > 0 then 1 else -1;
+
+def volMA = Average(volume, volumeLength);
+def f5 = if volume > volMA then 1 else -1;
+
+def rsiVal = RSI(length = rsiLength);
+def f6 = if rsiVal > 50 then 1 else -1;
+
+def macdHist = MACD(fastLength = macdFastLength, slowLength = macdSlowLength, MACDLength = macdSignalLength).Diff;
+def f7 = if macdHist > 0 then 1 else -1;
+
+def cciVal = CCI(length = cciLength);
+def f8 = if cciVal > 0 then 1 else -1;
+
+def score = f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
+def clampedThreshold = Max(0, Min(8, threshold));
+
+plot scan =
+    if scanDirection == scanDirection.Go
+    then score >= clampedThreshold
+    else score <= -clampedThreshold;
