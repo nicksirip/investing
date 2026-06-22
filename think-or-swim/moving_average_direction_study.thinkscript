@@ -8,23 +8,15 @@ input upColor = Color.GREEN;
 input downColor = Color.RED;
 input flatColor = Color.GRAY;
 
-def selectedPrice;
-switch (priceType) {
-case Close:
-    selectedPrice = close;
-case Open:
-    selectedPrice = open;
-case High:
-    selectedPrice = high;
-case Low:
-    selectedPrice = low;
-case HL2:
-    selectedPrice = (high + low) / 2;
-case HLC3:
-    selectedPrice = (high + low + close) / 3;
-case OHLC4:
-    selectedPrice = (open + high + low + close) / 4;
-}
+def selectedPrice =
+    if priceType == priceType.Close then close
+    else if priceType == priceType.Open then open
+    else if priceType == priceType.High then high
+    else if priceType == priceType.Low then low
+    else if priceType == priceType.HL2 then (high + low) / 2
+    else if priceType == priceType.HLC3 then (high + low + close) / 3
+    else if priceType == priceType.OHLC4 then (open + high + low + close) / 4
+    else close;
 
 plot MovingAvg = MovingAverage(maType, selectedPrice, maLength);
 MovingAvg.AssignValueColor(
