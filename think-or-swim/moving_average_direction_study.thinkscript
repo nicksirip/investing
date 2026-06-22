@@ -1,12 +1,11 @@
 # Configurable moving average study with directional coloring.
 # Includes optional (hidden by default) crossover direction signal.
+#
+# Colors are user-editable in the Edit Study dialog (DefineColor entries).
 
 input maType = AverageType.SIMPLE;
 input maLength = 50;
 input priceType = {default Close, Open, High, Low, HL2, HLC3, OHLC4};
-input upColor = Color.GREEN;
-input downColor = Color.RED;
-input flatColor = Color.GRAY;
 
 def selectedPrice =
     if priceType == priceType.Close then close
@@ -19,10 +18,13 @@ def selectedPrice =
     else close;
 
 plot MovingAvg = MovingAverage(maType, selectedPrice, maLength);
+MovingAvg.DefineColor("Up", Color.GREEN);
+MovingAvg.DefineColor("Down", Color.RED);
+MovingAvg.DefineColor("Flat", Color.GRAY);
 MovingAvg.AssignValueColor(
-    if MovingAvg > MovingAvg[1] then upColor
-    else if MovingAvg < MovingAvg[1] then downColor
-    else flatColor
+    if MovingAvg > MovingAvg[1] then MovingAvg.color("Up")
+    else if MovingAvg < MovingAvg[1] then MovingAvg.color("Down")
+    else MovingAvg.color("Flat")
 );
 MovingAvg.SetPaintingStrategy(PaintingStrategy.LINE);
 MovingAvg.SetLineWeight(2);
@@ -32,10 +34,11 @@ plot CrossDirection =
     if selectedPrice crosses above MovingAvg then 1
     else if selectedPrice crosses below MovingAvg then -1
     else Double.NaN;
+CrossDirection.DefineColor("Up", Color.GREEN);
+CrossDirection.DefineColor("Down", Color.RED);
 CrossDirection.AssignValueColor(
-    if CrossDirection > 0 then upColor
-    else if CrossDirection < 0 then downColor
-    else flatColor
+    if CrossDirection > 0 then CrossDirection.color("Up")
+    else CrossDirection.color("Down")
 );
 CrossDirection.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
 CrossDirection.SetLineWeight(3);
