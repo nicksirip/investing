@@ -27,19 +27,19 @@ MovingAvg.AssignValueColor(
     else MovingAvg.color("Flat")
 );
 MovingAvg.SetPaintingStrategy(PaintingStrategy.LINE);
-MovingAvg.SetLineWeight(2);
+MovingAvg.SetLineWeight(1);
 MovingAvg.HideBubble();
 
 plot CrossUp = selectedPrice crosses above MovingAvg;
 CrossUp.SetDefaultColor(Color.GREEN);
 CrossUp.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
-CrossUp.SetLineWeight(2);
+CrossUp.SetLineWeight(1);
 CrossUp.HideBubble();
 CrossUp.Hide();
 
 plot CrossDown = selectedPrice crosses below MovingAvg;
 CrossDown.SetDefaultColor(Color.RED);
 CrossDown.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
-CrossDown.SetLineWeight(2);
+CrossDown.SetLineWeight(1);
 CrossDown.HideBubble();
 CrossDown.Hide();
