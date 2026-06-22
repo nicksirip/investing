@@ -1,0 +1,45 @@
+# Configurable moving average study with directional coloring.
+# Includes optional (hidden by default) crossover direction signal.
+#
+# Colors are user-editable in the Edit Study dialog (DefineColor entries).
+
+input maType = AverageType.SIMPLE;
+input maLength = 50;
+input priceType = {default Close, Open, High, Low, HL2, HLC3, OHLC4};
+
+def selectedPrice =
+    if priceType == priceType.Close then close
+    else if priceType == priceType.Open then open
+    else if priceType == priceType.High then high
+    else if priceType == priceType.Low then low
+    else if priceType == priceType.HL2 then (high + low) / 2
+    else if priceType == priceType.HLC3 then (high + low + close) / 3
+    else if priceType == priceType.OHLC4 then (open + high + low + close) / 4
+    else close;
+
+plot MovingAvg = MovingAverage(maType, selectedPrice, maLength);
+MovingAvg.DefineColor("Up", Color.GREEN);
+MovingAvg.DefineColor("Down", Color.RED);
+MovingAvg.DefineColor("Flat", Color.GRAY);
+MovingAvg.AssignValueColor(
+    if MovingAvg > MovingAvg[1] then MovingAvg.color("Up")
+    else if MovingAvg < MovingAvg[1] then MovingAvg.color("Down")
+    else MovingAvg.color("Flat")
+);
+MovingAvg.SetPaintingStrategy(PaintingStrategy.LINE);
+MovingAvg.SetLineWeight(1);
+MovingAvg.HideBubble();
+
+plot CrossUp = selectedPrice crosses above MovingAvg;
+CrossUp.SetDefaultColor(Color.GREEN);
+CrossUp.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+CrossUp.SetLineWeight(1);
+CrossUp.HideBubble();
+CrossUp.Hide();
+
+plot CrossDown = selectedPrice crosses below MovingAvg;
+CrossDown.SetDefaultColor(Color.RED);
+CrossDown.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+CrossDown.SetLineWeight(1);
+CrossDown.HideBubble();
+CrossDown.Hide();

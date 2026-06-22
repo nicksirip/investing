@@ -89,6 +89,7 @@ Custom studies and scan columns for use in the [Thinkorswim](https://www.schwab.
 | [bid_ask_separation_col.thinkscript](think-or-swim/bid_ask_separation_col.thinkscript) | Scan column showing the bid/ask spread as a measure of liquidity |
 | [long_down_wick_study.thinkscript](think-or-swim/long_down_wick_study.thinkscript) | Study that highlights candles with long lower wicks (potential reversal signal) |
 | [long_up_wick_study.thinkscript](think-or-swim/long_up_wick_study.thinkscript) | Study that highlights candles with long upper wicks (potential reversal signal) |
+| [moving_average_direction_study.thinkscript](think-or-swim/moving_average_direction_study.thinkscript) | Configurable moving-average study with selectable MA type/length/price basis, direction-based MA coloring (up/down/flat), and an optional hidden crossover direction indicator (+1/-1 on crossover events) |
 | [obv_trend_col.thinkscript](think-or-swim/obv_trend_col.thinkscript) | Scan column showing the On-Balance Volume (OBV) trend direction |
 | [price_profile_rsi_volume_direction_study.thinkscript](think-or-swim/price_profile_rsi_volume_direction_study.thinkscript) | Study combining rolling volume profile, RSI regime shifts, and relative volume confirmation to identify potential bullish or bearish directional changes |
 | [ray_direction_column.thinkscript](think-or-swim/ray_direction_column.thinkscript) | Scan column showing the current Ray indicator direction |
