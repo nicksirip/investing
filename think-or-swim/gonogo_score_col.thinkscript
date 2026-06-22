@@ -1,0 +1,52 @@
+# GoNoGo Score Column
+# Displays the composite GoNoGo score (-8 to +8) for use as a watchlist column.
+# Matches the score calculation and color palette from gonogo_study.thinkscript.
+
+input fastLength = 10;
+input mediumLength = 20;
+input slowLength = 50;
+input rocLength = 14;
+input volumeLength = 20;
+input rsiLength = 14;
+input macdFastLength = 12;
+input macdSlowLength = 26;
+input macdSignalLength = 9;
+input cciLength = 14;
+
+def fastEMA = ExpAverage(close, fastLength);
+def f1 = if close > fastEMA then 1 else -1;
+
+def mediumEMA = ExpAverage(close, mediumLength);
+def f2 = if fastEMA > mediumEMA then 1 else -1;
+
+def slowEMA = ExpAverage(close, slowLength);
+def f3 = if mediumEMA > slowEMA then 1 else -1;
+
+def roc = (close - close[rocLength]) / close[rocLength] * 100;
+def f4 = if roc > 0 then 1 else -1;
+
+def volMA = Average(volume, volumeLength);
+def f5 = if volume > volMA then 1 else -1;
+
+def rsiVal = RSI(length = rsiLength);
+def f6 = if rsiVal > 50 then 1 else -1;
+
+def macdHist = MACD(fastLength = macdFastLength, slowLength = macdSlowLength, MACDLength = macdSignalLength).Diff;
+def f7 = if macdHist > 0 then 1 else -1;
+
+def cciVal = CCI(length = cciLength);
+def f8 = if cciVal > 0 then 1 else -1;
+
+plot data = f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
+
+data.AssignValueColor(
+    if data == 8  then CreateColor(0, 150, 255)
+    else if data == 6  then CreateColor(0, 100, 220)
+    else if data == 4  then CreateColor(0, 200, 200)
+    else if data == 2  then CreateColor(100, 215, 215)
+    else if data == 0  then CreateColor(255, 191, 0)
+    else if data == -2 then CreateColor(255, 182, 193)
+    else if data == -4 then CreateColor(255, 105, 180)
+    else if data == -6 then CreateColor(148, 0, 211)
+    else CreateColor(75, 0, 130)
+);
